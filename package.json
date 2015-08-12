@@ -1,0 +1,25 @@
+{
+  "name": "reactivesocket-js",
+  "version": "1.0.0",
+  "description": "reactive socket core",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ReactiveSocket/reactivesocket-js.git"
+  },
+  "keywords": [
+    "reactive",
+    "socket",
+    "JS",
+    "core"
+  ],
+  "author": "Yunong J Xiao",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ReactiveSocket/reactivesocket-js/issues"
+  },
+  "homepage": "https://github.com/ReactiveSocket/reactivesocket-js#readme"
+}
