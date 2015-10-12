@@ -21,5 +21,13 @@
   "bugs": {
     "url": "https://github.com/ReactiveSocket/reactivesocket-js/issues"
   },
-  "homepage": "https://github.com/ReactiveSocket/reactivesocket-js#readme"
+  "homepage": "https://github.com/ReactiveSocket/reactivesocket-js#readme",
+  "dependencies": {
+    "assert-plus": "0.1.5",
+    "ws": "0.8.0"
+  },
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "mocha": "^2.3.0"
+  }
 }
