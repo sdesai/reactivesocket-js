@@ -7,43 +7,75 @@ var TYPES = CONSTANTS.TYPES;
 var VERSION = CONSTANTS.VERSION;
 
 // -------------------------- SETUP ------------------
-var setupBuffer = new Buffer(24);
+var setupFrame = new Buffer(24);
 
-setupBuffer.writeUInt32BE(0x00000024, 0); // streamId 0
-setupBuffer.writeUInt32BE(TYPES.SETUP << 16, 4); // type setup, no flags
-setupBuffer.writeUInt32BE(0x00000000, 8); // streamId 0
-setupBuffer.writeUInt32BE(VERSION & 0xFFFFFFFF, 12); // streamId 0
-setupBuffer.writeUInt32BE(0x0000003FF, 16); // time between keep alive frames,
+setupFrame.writeUInt32BE(0x00000024, 0); // streamId 0
+setupFrame.writeUInt32BE(TYPES.SETUP << 16, 4); // type setup, no flags
+setupFrame.writeUInt32BE(0x00000000, 8); // streamId 0
+setupFrame.writeUInt32BE(VERSION & 0xFFFFFFFF, 12); // streamId 0
+setupFrame.writeUInt32BE(0x0000003FF, 16); // time between keep alive frames,
                                             // 1023ms
-setupBuffer.writeUInt32BE(0x000000FFF, 20); // max lifetime, 4095ms
+setupFrame.writeUInt32BE(0x000000FFF, 20); // max lifetime, 4095ms
 
 var encodingTypeBuffer = new Buffer(5);
 encodingTypeBuffer.write('UTF-8');
 var mimeLength = 'UTF-8'.length;
 var lengthBuffer = new Buffer(1);
 lengthBuffer.writeUInt8(mimeLength, 0);
-setupBuffer = Buffer.concat([setupBuffer, lengthBuffer, encodingTypeBuffer, lengthBuffer,
+setupFrame = Buffer.concat([setupFrame, lengthBuffer, encodingTypeBuffer, lengthBuffer,
                             encodingTypeBuffer]);
 
+var setupFrameOffset = setupFrame.length + CONSTANTS.METADATA_LENGTH;
+var setupMetaData = 'super important metadata';
+var setupData = 'super important data';
+var setupFrameWithPayloadLength =
+    setupFrame.length +
+    setupData.length +
+    setupMetaData.length +
+    CONSTANTS.METADATA_LENGTH;
+var setupFrameWithPayload = new Buffer(setupFrameWithPayloadLength).fill(0);
+setupFrame.copy(setupFrameWithPayload);
+
+// Writes new length into setup with frame payload
+setupFrameWithPayload.writeUInt32BE(setupFrameWithPayloadLength, 0);
+
+// Writes metaData length
+setupFrameWithPayload.writeUInt32BE(setupMetaData.length, setupFrame.length);
+setupFrameOffset += copyStringDataTo(setupFrameWithPayload,
+                                     setupMetaData, setupFrameOffset);
+
+// Writes data
+copyStringDataTo(setupFrameWithPayload, setupData, setupFrameOffset);
+
+// -------------------------- ERROR ------------------
+var errorFrame = new Buffer(16);
+
+errorFrame.writeUInt32BE(0x00000000, 0);
+errorFrame.writeUInt32BE(TYPES.ERROR << 16, 4);
+errorFrame.writeUInt32BE(0x00000004, 8);
+errorFrame.writeUInt32BE(ERROR_CODES.INVALID_SETUP, 12);
+
+var errorFrameOffset = errorFrame.length + CONSTANTS.METADATA_LENGTH;
+var errorData = 'Bad Data';
+var errorFrameWithPayloadLength =
+    errorFrame.length + errorData.length + CONSTANTS.METADATA_LENGTH;
+var errorFrameWithPayload = new Buffer(errorFrameWithPayloadLength).fill(0);
+errorFrame.copy(errorFrameWithPayload);
+errorFrameWithPayload.writeUInt32BE(errorFrameWithPayloadLength, 0);
+
+// Copies the string data into the payload.data location.
+copyStringDataTo(errorFrameWithPayload, errorData, errorFrameOffset);
 
 // TODO : VALIDATE ALL OF THESE ARE CORRECT
-// -------------------------- ERROR ------------------
-var errorBuffer = new Buffer(16);
-
-errorBuffer.writeUInt32BE(0x00000000, 0);
-errorBuffer.writeUInt32BE(TYPES.ERROR << 16, 4);
-errorBuffer.writeUInt32BE(0x00000001, 8);
-errorBuffer.writeUInt32BE(ERROR_CODES.INVALID_SETUP, 12);
 // No metaData or error payload data
-
 // -------------------------- LEASE ------------------
-var leaseBuffer = new Buffer(20);
+var leaseFrame = new Buffer(20);
 
-leaseBuffer.writeUInt32BE(0x00000000, 0);
-leaseBuffer.writeUInt32BE(TYPES.LEASE << 16, 4);
-leaseBuffer.writeUInt32BE(0x00000001, 8);
-leaseBuffer.writeUInt32BE(0x00000FFF, 12); // time to live, 4095ms
-leaseBuffer.writeUInt32BE(0x000007FF, 16); // Number of requests to send, 2047
+leaseFrame.writeUInt32BE(0x00000000, 0);
+leaseFrame.writeUInt32BE(TYPES.LEASE << 16, 4);
+leaseFrame.writeUInt32BE(0x00000001, 8);
+leaseFrame.writeUInt32BE(0x00000FFF, 12); // time to live, 4095ms
+leaseFrame.writeUInt32BE(0x000007FF, 16); // Number of requests to send, 2047
 // No metaData
 
 // -------------------------- KEEP ALIVE ------------------
@@ -101,7 +133,9 @@ requestChannelBuffer.writeUInt32BE(0xAAAAAAAA, 12);
 // -------------------------- PAYLOAD ENCODING -----------------
 
 module.exports = {
-    setupBuffer: setupBuffer,
+    setupFrame: setupFrame,
+    setupFrameWithPayload: setupFrameWithPayload,
+    errorFrame: errorFrameWithPayload
 };
 
 function setLeaseFlag(buffer, lease) {
@@ -119,4 +153,16 @@ function setFlag(buffer, position) {
 
     // Invert value to use XOR as flag setter
     buffer.writeUInt32BE(typeAndFlags | (0x1 << position), 4);
+}
+
+// returns length of copied data.
+function copyStringDataTo(buffer, stringData, offset) {
+    var i = 0;
+    for (; i < stringData.length; ++i) {
+        var charCode = stringData.charCodeAt(i);
+        var at = offset + i;
+        buffer.writeUInt8(charCode, at);
+    }
+
+    return i;
 }
