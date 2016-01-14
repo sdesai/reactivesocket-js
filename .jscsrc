@@ -21,7 +21,7 @@
     "maximumLineLength": {
         "value": 80,
         "allowComments": false,
-        "allowUrlComments": false,
+        "allowUrlComments": true,
         "allowRegex": false
     },
     "validateIndentation": 4,
@@ -36,10 +36,10 @@
         "binary",
         "string"
     ],
+    "disallowAnonymousFunctions": false,
     "disallowMixedSpacesAndTabs": true,
     "disallowMultipleVarDecl": "exceptUndefined",
     "disallowNewlineBeforeBlockStatements": true,
-    "disallowOperatorBeforeLineBreak": [ "." ],
     "disallowQuotedKeysInObjects": true,
     "disallowSpaceAfterPrefixUnaryOperators": true,
     "disallowSpaceBeforePostfixUnaryOperators": true,
@@ -69,14 +69,21 @@
     "requirePaddingNewlinesBeforeKeywords": [
         "do",
         "for",
-        "if",
         "switch",
         "try",
         "while"
     ],
     "requireSemicolons": true,
     "requireSpaceAfterBinaryOperators": true,
-    "requireSpaceAfterKeywords": true,
+    "requireSpaceAfterKeywords": [
+        "if",
+        "else",
+        "for",
+        "while",
+        "do",
+        "try",
+        "catch"
+    ],
     "requireSpaceBeforeBinaryOperators": true,
     "requireSpaceBeforeBlockStatements": true,
     "requireSpaceBeforeKeywords": [
@@ -85,9 +92,6 @@
         "catch"
     ],
     "requireSpaceBetweenArguments": true,
-    "requireSpacesInAnonymousFunctionExpression": {
-        "beforeOpeningRoundBrace": true
-    },
     "requireSpacesInConditionalExpression": true,
     "requireSpacesInForStatement": true,
     "requireSpacesInFunction": {

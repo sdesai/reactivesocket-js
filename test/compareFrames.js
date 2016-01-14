@@ -1,3 +1,5 @@
+'use strict';
+
 var expect = require('chai').expect;
 var friendlyHex = require('./friendlyHex');
 
@@ -5,8 +7,9 @@ var EXPECT_STRING = 'expects the buffers to have the same ';
 
 /**
  * Compares the two buffers in a more readible way.
- * @param {Buffer} a -
- * @param {Buffer} b -
+ * @param {Buffer} expected -
+ * @param {Buffer} actual -
+ * @returns {undefined} -
  */
 module.exports = function compareFrames(expected, actual) {
 

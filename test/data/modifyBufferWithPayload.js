@@ -1,3 +1,5 @@
+'use strict';
+
 var CONSTANTS = require('./../../lib/protocol/constants');
 var METADATA_LENGTH = CONSTANTS.METADATA_LENGTH;
 var METADATA_FLAG = CONSTANTS.FLAGS.METADATA;
@@ -45,6 +47,7 @@ module.exports = function modifyBufferWithPayload(buffer, payload) {
 // returns length of copied data.
 function copyStringDataTo(buffer, stringData, offset) {
     var i = 0;
+
     for (; i < stringData.length; ++i) {
         var charCode = stringData.charCodeAt(i);
         var at = offset + i;
