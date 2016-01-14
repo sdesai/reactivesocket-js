@@ -1,4 +1,5 @@
 'use strict';
+
 var modifyBufferWithPayload = require('./modifyBufferWithPayload');
 
 var CONSTANTS = require('./../../lib/protocol/constants');
@@ -6,7 +7,6 @@ var CONSTANTS = require('./../../lib/protocol/constants');
 var ERROR_CODES = CONSTANTS.ERROR_CODES;
 var ERROR_DATA = 'Bad Data';
 var ERROR_META_DATA = 'MBad Data';
-var METADATA_FLAG = CONSTANTS.FLAGS.METADATA;
 var TYPES = CONSTANTS.TYPES;
 
 module.exports = {
@@ -25,16 +25,16 @@ module.exports = {
     errorFrameWithMeta: modifyBufferWithPayload(errorFrame(), {
         metadata: ERROR_META_DATA,
         data: ERROR_DATA
-    }),
+    })
 };
 
 function errorFrame() {
-    var errorFrame = new Buffer(16);
+    var eFrame = new Buffer(16);
 
-    errorFrame.writeUInt32BE(0x00000000, 0);
-    errorFrame.writeUInt32BE(TYPES.ERROR << 16, 4);
-    errorFrame.writeUInt32BE(0x00000004, 8);
-    errorFrame.writeUInt32BE(ERROR_CODES.INVALID_SETUP, 12);
+    eFrame.writeUInt32BE(0x00000000, 0);
+    eFrame.writeUInt32BE(TYPES.ERROR << 16, 4);
+    eFrame.writeUInt32BE(0x00000004, 8);
+    eFrame.writeUInt32BE(ERROR_CODES.INVALID_SETUP, 12);
 
-    return errorFrame;
+    return eFrame;
 }

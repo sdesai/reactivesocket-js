@@ -1,3 +1,5 @@
+'use strict';
+
 var modifyBufferWithPayload = require('./modifyBufferWithPayload');
 
 var CONSTANTS = require('./../../lib/protocol/constants');
@@ -29,26 +31,26 @@ module.exports = {
     setupFrameWithMeta: modifyBufferWithPayload(setupFrame(), {
         metadata: SETUP_META_DATA,
         data: SETUP_DATA
-    }),
+    })
 };
 
 function setupFrame() {
-    var setupFrame = new Buffer(24);
+    var sFrame = new Buffer(24);
 
-    setupFrame.writeUInt32BE(0x00000024, 0); // streamId 0
-    setupFrame.writeUInt32BE(TYPES.SETUP << 16, 4); // type setup, no flags
-    setupFrame.writeUInt32BE(0x00000000, 8); // streamId 0
-    setupFrame.writeUInt32BE(VERSION & 0xFFFFFFFF, 12); // streamId 0
-    setupFrame.writeUInt32BE(SETUP_KEEP_ALIVE, 16);
-    setupFrame.writeUInt32BE(SETUP_MAX_LIFE, 20);
+    sFrame.writeUInt32BE(0x00000024, 0); // streamId 0
+    sFrame.writeUInt32BE(TYPES.SETUP << 16, 4); // type setup, no flags
+    sFrame.writeUInt32BE(0x00000000, 8); // streamId 0
+    sFrame.writeUInt32BE(VERSION & 0xFFFFFFFF, 12); // streamId 0
+    sFrame.writeUInt32BE(SETUP_KEEP_ALIVE, 16);
+    sFrame.writeUInt32BE(SETUP_MAX_LIFE, 20);
 
     var encodingTypeBuffer = new Buffer(5);
     encodingTypeBuffer.write('UTF-8');
     var mimeLength = 'UTF-8'.length;
     var lengthBuffer = new Buffer(1);
     lengthBuffer.writeUInt8(mimeLength, 0);
-    setupFrame = Buffer.concat([setupFrame, lengthBuffer, encodingTypeBuffer, lengthBuffer,
-                                encodingTypeBuffer]);
+    sFrame = Buffer.concat([sFrame, lengthBuffer, encodingTypeBuffer,
+                           lengthBuffer, encodingTypeBuffer]);
 
-    return setupFrame;
+    return sFrame;
 }

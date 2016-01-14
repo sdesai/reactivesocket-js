@@ -1,3 +1,5 @@
+'use strict';
+
 var errorFrame = require('./errorFrame');
 var setupFrame = require('./setupFrame');
 
