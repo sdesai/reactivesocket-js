@@ -4,7 +4,7 @@ var CONSTANTS = require('./../../lib/protocol/constants');
 var METADATA_LENGTH = CONSTANTS.METADATA_LENGTH;
 var METADATA_FLAG = CONSTANTS.FLAGS.METADATA;
 
-module.exports = function modifyBufferWithPayload(buffer, payload) {
+module.exports = function addPayload(buffer, payload) {
     var bufferOffset = buffer.length;
     var dataLength = payload.data ? payload.data.length : 0;
     var metadataLength = payload.metadata ? payload.metadata.length : 0;

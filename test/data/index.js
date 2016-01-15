@@ -2,29 +2,40 @@
 
 var errorFrame = require('./errorFrame');
 var setupFrame = require('./setupFrame');
+var reqResFrame = require('./reqResFrame');
 
 module.exports = {
-    ERROR_DATA: errorFrame.ERROR_DATA,
-    ERROR_META_DATA: errorFrame.ERROR_META_DATA,
-
-    SETUP_DATA: setupFrame.SETUP_DATA,
-    SETUP_KEEP_ALIVE: setupFrame.SETUP_KEEP_ALIVE,
-    SETUP_MAX_LIFE: setupFrame.SETUP_MAX_LIFE,
-    SETUP_META_DATA: setupFrame.SETUP_META_DATA,
-
     // All the data uses stream id 4
     STREAM_ID: 4,
 
     // --------------------------------------------
     //  Error frame
     // --------------------------------------------
+    ERROR_DATA: errorFrame.ERROR_DATA,
+    ERROR_META_DATA: errorFrame.ERROR_META_DATA,
+
     errorFrame: errorFrame.errorFrame,
     errorFrameWithData: errorFrame.errorFrameWithData,
     errorFrameWithMeta: errorFrame.errorFrameWithMeta,
 
     // --------------------------------------------
+    //  Request Response frame
+    // --------------------------------------------
+    REQ_RES_DATA: reqResFrame.REQ_RES_DATA,
+    REQ_RES_META: reqResFrame.REQ_RES_META,
+
+    reqResFrame: reqResFrame.reqResFrame,
+    reqResFrameWithData: reqResFrame.reqResFrameWithData,
+    reqResFrameWithMeta: reqResFrame.reqResFrameWithMeta,
+
+    // --------------------------------------------
     //  Setup frame
     // --------------------------------------------
+    SETUP_DATA: setupFrame.SETUP_DATA,
+    SETUP_KEEP_ALIVE: setupFrame.SETUP_KEEP_ALIVE,
+    SETUP_MAX_LIFE: setupFrame.SETUP_MAX_LIFE,
+    SETUP_META_DATA: setupFrame.SETUP_META_DATA,
+
     setupFrame: setupFrame.setupFrame,
     setupFrameWithData: setupFrame.setupFrameWithData,
     setupFrameWithMeta: setupFrame.setupFrameWithMeta
@@ -39,18 +50,6 @@ module.exports = {
 //// TODO : VALIDATE ALL OF THESE ARE CORRECT
 //// TODO : VALIDATE ALL OF THESE ARE CORRECT
 
-//// -------------------------- REQUEST RESPONSE ------------------
-//var requestResponseBuffer = new Buffer(16);
-
-//requestResponseBuffer.writeUInt32BE(0x00000004, 0); // 4 bytes of data
-//requestResponseBuffer.writeUInt32BE(TYPES.REQUEST_RESPONSE << 16, 4);
-//requestResponseBuffer.writeUInt32BE(0x00000004, 8);
-//requestResponseBuffer.writeUInt32BE(0xAAAAAAAA, 12);
-
-//var requestResponsePayload = {
-    //data: JSON.stringify({arg:1})
-//};
-//// No metaData or error payload data
 //// -------------------------- LEASE ------------------
 //var leaseFrame = new Buffer(20);
 
