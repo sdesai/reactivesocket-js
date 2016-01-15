@@ -1,6 +1,6 @@
 'use strict';
 
-var modifyBufferWithPayload = require('./modifyBufferWithPayload');
+var addPayload = require('./addPayload');
 
 var CONSTANTS = require('./../../lib/protocol/constants');
 
@@ -17,12 +17,12 @@ module.exports = {
     errorFrame: errorFrame(),
 
     // Setup frame with just data
-    errorFrameWithData: modifyBufferWithPayload(errorFrame(), {
+    errorFrameWithData: addPayload(errorFrame(), {
         data: ERROR_DATA
     }),
 
     // Ensures that the metadata is added to the error frame
-    errorFrameWithMeta: modifyBufferWithPayload(errorFrame(), {
+    errorFrameWithMeta: addPayload(errorFrame(), {
         metadata: ERROR_META_DATA,
         data: ERROR_DATA
     })
