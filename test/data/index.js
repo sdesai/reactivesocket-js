@@ -3,6 +3,7 @@
 var errorFrame = require('./errorFrame');
 var setupFrame = require('./setupFrame');
 var reqResFrame = require('./reqResFrame');
+var responseFrame = require('./responseFrame');
 
 module.exports = {
     // All the data uses stream id 4
@@ -27,6 +28,16 @@ module.exports = {
     reqResFrame: reqResFrame.reqResFrame,
     reqResFrameWithData: reqResFrame.reqResFrameWithData,
     reqResFrameWithMeta: reqResFrame.reqResFrameWithMeta,
+
+    // --------------------------------------------
+    //  Response frame
+    // --------------------------------------------
+    RES_DATA: responseFrame.RES_DATA,
+    RES_META: responseFrame.RES_META,
+
+    responseFrame: responseFrame.responseFrame,
+    responseFrameWithData: responseFrame.responseFrameWithData,
+    responseFrameWithMeta: responseFrame.responseFrameWithMeta,
 
     // --------------------------------------------
     //  Setup frame

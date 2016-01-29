@@ -103,4 +103,8 @@ describe('Frame', function () {
 
             compareFrames(expected, actual);
         });
+
+    // Response tests
+    // TODO: This is going to be the style moving forward.
+    require('./frame/Response.spec');
 });
