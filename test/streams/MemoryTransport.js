@@ -3,6 +3,8 @@
 var EventEmitter = require('events');
 var util = require('util');
 
+var uniqueId = 0;
+
 /**
  * Going to allow for being the bridge between to socket connections.
  *
@@ -27,7 +29,7 @@ MemoryTransport.prototype.establishConnection = function establishConnection() {
     if (this._delay) {
         var self = this;
         setTimeout(function() {
-            self.emit('connection', self._stream);
+            self.emit('connection', self._stream, ++uniqueId);
         }, this._delay);
     }
 
