@@ -9,9 +9,8 @@ var sinon = require('sinon');
 var compareFrames  = require('./../compareFrames');
 var CONSTANTS = require('./../../lib/protocol/constants');
 var Frame = require('./../../lib/protocol/frame');
-var MemoryTransport = require('./MemoryTransport');
+var MemoryTransport = require('./util/MemoryTransport');
 var ReactiveClient = require('./../../lib/streams/ReactiveClient');
-var TestableDuplexStream = require('./TestableDuplexStream');
 
 var noOp = function() {};
 var PAYLOAD_ENCODING = 'UTF-8';
@@ -22,7 +21,7 @@ var RESPONSE = CONSTANTS.TYPES.RESPONSE;
 describe('ReactiveClient', function() {
     it('should go through the setup process.', function() {
         var transport = new MemoryTransport();
-        var stream = setTransportStream(transport);
+        var stream  = transport.getNextStream();
         var client = new ReactiveClient(transport, {
             keepAliveInterval: 1024,
             maxLife: 2048
@@ -44,7 +43,7 @@ describe('ReactiveClient', function() {
 
     it('should establish a connection through sending data.', function(done) {
         var transport = new MemoryTransport();
-        var stream = setTransportStream(transport);
+        var stream  = transport.getNextStream();
         var client = new ReactiveClient(transport, {
             keepAliveInterval: 1024,
             maxLife: 2048
@@ -82,7 +81,7 @@ describe('ReactiveClient', function() {
     it('should send multiple requests and have correct callback order.',
         function(done) {
             var transport = new MemoryTransport();
-            var stream = setTransportStream(transport);
+            var stream  = transport.getNextStream();
             var client = new ReactiveClient(transport, {
                 keepAliveInterval: 1024,
                 maxLife: 2048
@@ -143,12 +142,6 @@ describe('ReactiveClient', function() {
                 subscribe(noOp, done, done);
         });
 });
-
-function setTransportStream(transport) {
-    var stream = new TestableDuplexStream();
-    transport.setStream(stream);
-    return stream;
-}
 
 function autoRespond(outData) {
     return function(buffer, frame) {
