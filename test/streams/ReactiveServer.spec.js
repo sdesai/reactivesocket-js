@@ -4,9 +4,8 @@ var expect = require('chai').expect;
 
 var CONSTANTS = require('./../../lib/protocol/constants');
 var Frame = require('./../../lib/protocol/frame');
-var MemoryTransport = require('./MemoryTransport');
+var MemoryTransport = require('./util/MemoryTransport');
 var ReactiveServer = require('./../../lib/streams/ReactiveServer');
-var TestableDuplexStream = require('./TestableDuplexStream');
 
 var PAYLOAD_ENCODING = 'UTF-8';
 var SETUP = CONSTANTS.TYPES.SETUP;
@@ -14,7 +13,7 @@ var SETUP = CONSTANTS.TYPES.SETUP;
 describe('ReactiveServer', function() {
     it('upon connection should update the setup frame', function(done) {
         var transport = new MemoryTransport();
-        var stream = setTransportStream(transport);
+        var stream  = transport.getNextStream();
         var server = new ReactiveServer(transport);
         var encoding = {
             data: PAYLOAD_ENCODING,
@@ -53,9 +52,3 @@ describe('ReactiveServer', function() {
         stream.push(setupFrame);
     });
 });
-
-function setTransportStream(transport) {
-    var stream = new TestableDuplexStream();
-    transport.setStream(stream);
-    return stream;
-}

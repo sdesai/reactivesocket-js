@@ -5,7 +5,7 @@ var util = require('util');
 
 var sinon = require('sinon');
 
-var Frame = require('./../../lib/protocol/frame');
+var Frame = require('./../../../lib/protocol/frame');
 
 /**
  * @constructor
