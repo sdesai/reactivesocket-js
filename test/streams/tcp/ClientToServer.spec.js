@@ -6,13 +6,7 @@ var sinon = require('sinon');
 var Rx = require('rxjs');
 
 var CONSTANTS = require('./../../../lib/protocol/constants');
-var ReactiveClient = require('./../../../lib/streams/ReactiveClient');
-var ReactiveServer = require('./../../../lib/streams/ReactiveServer');
-var RSTCPClientTransport =
-    require('./../../../lib/streams/transports/RSTCPClientTransport');
-var RSTCPServerTransport =
-    require('./../../../lib/streams/transports/RSTCPServerTransport');
-
+var ReactiveSocket = require('./../../../lib');
 var expect = chai.expect;
 var Observable = Rx.Observable;
 var fromNodeCallback = Observable.bindNodeCallback;
@@ -23,14 +17,14 @@ var RESPONSE = CONSTANTS.TYPES.RESPONSE;
 describe('RS -> RQ -> RS', function() {
     var server, client;
     beforeEach(function() {
-        server = new ReactiveServer(new RSTCPServerTransport({
+        server = ReactiveSocket.createTCPServer({
             port: 50051,
             host: 'localhost'
-        }));
-        client = new ReactiveClient(new RSTCPClientTransport({
+        });
+        client = ReactiveSocket.createTCPClient({
             port: 50051,
             host: 'localhost'
-        }));
+        });
     });
 
     it('should perform a basic rs -> rq -> rs', function(done) {
