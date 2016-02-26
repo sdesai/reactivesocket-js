@@ -1,3 +1,13 @@
+<a name="0.0.2"></a>
+## [0.0.2](https://github.com/ReactiveSocket/reactivesocket-js/compare/v0.0.1...v0.0.2) (2016-02-26)
+
+
+### Features
+
+* **factory:** Added the factory functions for TCP connections ([e3a1763](https://github.com/ReactiveSocket/reactivesocket-js/commit/e3a1763))
+
+
+
 <a name="0.0.1"></a>
 ## 0.0.1 (2016-02-26)
 
