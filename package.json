@@ -25,6 +25,7 @@
   "dependencies": {
     "assert-plus": "0.1.5",
     "bunyan": "^1.5.1",
+    "bunyan-ring-buffer": "^1.0.0",
     "ws": "0.8.0"
   },
   "devDependencies": {
