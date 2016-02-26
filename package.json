@@ -2,7 +2,7 @@
   "name": "reactivesocket-js",
   "version": "0.0.1",
   "description": "reactive socket core",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "all": "gulp all"
   },
