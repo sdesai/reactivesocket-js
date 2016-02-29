@@ -72,4 +72,8 @@ TestableDuplexStream.prototype.setWrite = function setWrite(onWrite) {
     return this._onWrite;
 };
 
+TestableDuplexStream.prototype.close = function close() {
+    this.emit('close');
+};
+
 module.exports = TestableDuplexStream;
