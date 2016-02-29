@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package perf;
+
+service Perf {
+    rpc Get (HelloRequest) returns (HelloResponse) {}
+}
+
+message HelloRequest {
+    string hello = 1;
+}
+
+message HelloResponse {
+    string hello = 1;
+}
+
