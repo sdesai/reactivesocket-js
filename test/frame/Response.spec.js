@@ -38,6 +38,17 @@ describe('Response Frame', function() {
 
             compareFrames(expected, actual);
         });
+
+    it('should create a res frame with data and meta and completed (buffer).',
+        function() {
+            var expected = setFlag(data.responseFrameWithMeta, COMPLETE);
+            var actual = Frame.getResponseFrame(data.STREAM_ID, {
+                data: new Buffer(data.RES_DATA),
+                metadata: new Buffer(data.RES_META)
+            }, true);
+
+            compareFrames(expected, actual);
+        });
 });
 
 
