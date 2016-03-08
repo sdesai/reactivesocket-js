@@ -1,3 +1,18 @@
+<a name="0.2.0"></a>
+# [0.2.0](https://github.com/ReactiveSocket/reactivesocket-js/compare/v0.1.0...v0.2.0) (2016-03-08)
+
+
+### Bug Fixes
+
+* **memory:** fill(0) was forgotten in expected data. ([f975b7a](https://github.com/ReactiveSocket/reactivesocket-js/commit/f975b7a))
+* **ws:** There were some missing exports. ([e5fd535](https://github.com/ReactiveSocket/reactivesocket-js/commit/e5fd535))
+
+### Features
+
+* **ws-transport:** The websocket transport ([48bb5c8](https://github.com/ReactiveSocket/reactivesocket-js/commit/48bb5c8))
+
+
+
 <a name="0.0.2"></a>
 ## [0.0.2](https://github.com/ReactiveSocket/reactivesocket-js/compare/v0.0.1...v0.0.2) (2016-02-26)
 
