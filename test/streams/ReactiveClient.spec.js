@@ -68,7 +68,7 @@ describe('ReactiveClient', function() {
                         type: RESPONSE,
                         flags: CONSTANTS.FLAGS.COMPLETE,
                         length: 24,
-                        streamId: 1
+                        streamId: 2
                     },
                     payload: {
                         data: new Buffer('hello client')
