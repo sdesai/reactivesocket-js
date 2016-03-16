@@ -16,7 +16,7 @@ var RESPONSE = CONSTANTS.TYPES.RESPONSE;
 
 describe('RS -> RQ -> RS', function() {
     var server, client;
-    beforeEach(function() {
+    beforeEach(function(done) {
         server = ReactiveSocket.createTCPServer({
             port: 50051,
             host: 'localhost'
@@ -25,6 +25,8 @@ describe('RS -> RQ -> RS', function() {
             port: 50051,
             host: 'localhost'
         });
+
+        client.on('connection', done);
     });
 
     it('should perform a basic rs -> rq -> rs', function(done) {
