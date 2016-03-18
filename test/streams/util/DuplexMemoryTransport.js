@@ -56,7 +56,7 @@ function createPairTransports(clientArg, serverArg) {
 
     // On a connection, we need to create the connection for the server
     // transport protocol.
-    client.on('est-con', function() {
+    client.on('est-con', function () {
         server.establishConnection();
     });
 

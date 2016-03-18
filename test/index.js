@@ -1,5 +1,5 @@
 'use strict';
 
-describe('reactive-socket', function() {
+describe('reactive-socket', function () {
     require('./frame/');
 });

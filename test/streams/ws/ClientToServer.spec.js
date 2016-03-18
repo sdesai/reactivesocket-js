@@ -19,9 +19,9 @@ var noOp = function noOp() {};
 var REQUEST_RESPONSE = CONSTANTS.TYPES.REQUEST_RESPONSE;
 var RESPONSE = CONSTANTS.TYPES.RESPONSE;
 
-describe('RS -> RQ -> RS', function() {
+describe('RS -> RQ -> RS', function () {
     var server, client;
-    beforeEach(function() {
+    beforeEach(function () {
         var wsTransportServer = new RSWSServerTransport({
             port: 50051,
             host: 'localhost'
@@ -35,7 +35,7 @@ describe('RS -> RQ -> RS', function() {
         client = new ReactiveSocket.ReactiveClient(wsTransportClient);
     });
 
-    it('should perform a basic rs -> rq -> rs', function(done) {
+    it('should perform a basic rs -> rq -> rs', function (done) {
         var onReqRes = sinon.spy(function onRequest(req, res) {
             var data = req.payload.data.toString();
             res.respond('after ' + data + ' :: hello client');
@@ -46,8 +46,7 @@ describe('RS -> RQ -> RS', function() {
 
         var onNext = sinon.spy();
         var request = fromNodeCallback(client.requestResponse.bind(client));
-        request({data: 'hello server'}).
-            do(onNext, noOp, function onCompleted() {
+        request({data: 'hello server'}). do(onNext, noOp, function onCompleted() {
                 expect(onNext.calledOnce).to.equals(true);
                 expect(onReqRes.calledOnce).to.equals(true);
 
@@ -56,13 +55,12 @@ describe('RS -> RQ -> RS', function() {
                     data: new Buffer('after hello server :: hello client')
                 });
                 expect(args[0].header.type).to.equals(RESPONSE);
-            }).
-            subscribe(noOp, done, done);
+            }). subscribe(noOp, done, done);
     });
 
-    afterEach(function(done) {
+    afterEach(function (done) {
         client.close();
-        server.close(function() {
+        server.close(function () {
             done();
         });
     });

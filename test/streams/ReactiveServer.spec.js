@@ -10,8 +10,8 @@ var ReactiveServer = require('./../../lib/streams/ReactiveServer');
 var PAYLOAD_ENCODING = 'UTF-8';
 var SETUP = CONSTANTS.TYPES.SETUP;
 
-describe('ReactiveServer', function() {
-    it('upon connection should update the setup frame', function(done) {
+describe('ReactiveServer', function () {
+    it('upon connection should update the setup frame', function (done) {
         var transport = new MemoryTransport();
         var stream  = transport.getNextStream();
         var server = new ReactiveServer(transport);
@@ -22,9 +22,7 @@ describe('ReactiveServer', function() {
 
         transport.establishConnection();
 
-        var streams = Object.
-            keys(server._stream).
-            map(function(x) {
+        var streams = Object. keys(server._stream). map(function (x) {
                 return server._stream[x];
             });
 
@@ -32,7 +30,7 @@ describe('ReactiveServer', function() {
         expect(streams.length).to.equals(1);
 
         // Streams resolve async. boo.
-        server.on(SETUP, function() {
+        server.on(SETUP, function () {
             var s = streams[0];
 
             try {

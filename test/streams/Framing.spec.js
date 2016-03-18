@@ -7,8 +7,8 @@ var sinon = require('sinon');
 var RSFramingStream = require('./../../lib/streams/transports/RSFramingStream');
 var TestableDuplexStream = require('./../streams/util/TestableDuplexStream');
 
-describe('Framing', function() {
-    it('1 frame, 1 chunk', function(done) {
+describe('Framing', function () {
+    it('1 frame, 1 chunk', function (done) {
         var b1 = createBuffer(8, 0x00112233);
         var testStream = new TestableDuplexStream();
         var framingStream = new RSFramingStream(testStream);
@@ -27,11 +27,11 @@ describe('Framing', function() {
         testStream.push(b1);
 
         // Streams won't write sync
-        setTimeout(function() {
+        setTimeout(function () {
             testStream.close();
         });
     });
-    it('1 frame over 2 chunks.', function(done) {
+    it('1 frame over 2 chunks.', function (done) {
         var b1 = createBuffer(8, 0x00112233);
         var testStream = new TestableDuplexStream();
         var framingStream = new RSFramingStream(testStream);
@@ -51,11 +51,11 @@ describe('Framing', function() {
         testStream.push(b1.slice(6));
 
         // Streams won't write sync
-        setTimeout(function() {
+        setTimeout(function () {
             testStream.close();
         });
     });
-    it('2 frames, 1 chunk.', function(done) {
+    it('2 frames, 1 chunk.', function (done) {
         var b1 = createBuffer(8, 0x00112233);
         var b2 = createBuffer(8, 0x33221100);
         var combine = Buffer.concat([b1, b2]);
@@ -78,13 +78,13 @@ describe('Framing', function() {
         testStream.push(combine);
 
         // Streams won't write sync
-        setTimeout(function() {
+        setTimeout(function () {
             testStream.close();
         });
     });
 
     it('1 frame, 1 partial from first chunk, followed by the completion of ' +
-       'the second frame in second chunk.', function(done) {
+       'the second frame in second chunk.', function (done) {
             var b1 = createBuffer(8, 0x00112233);
             var b2 = createBuffer(8, 0x33221100);
             var combine = Buffer.concat([b1, b2]);
@@ -108,7 +108,7 @@ describe('Framing', function() {
             testStream.push(combine.slice(6));
 
             // Streams won't write sync
-            setTimeout(function() {
+            setTimeout(function () {
                 testStream.close();
             });
         });

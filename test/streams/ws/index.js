@@ -1,5 +1,5 @@
 'use strict';
 
-describe('WebSocket', function() {
+describe('WebSocket', function () {
     require('./ClientToServer.spec');
 });

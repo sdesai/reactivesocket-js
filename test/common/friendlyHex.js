@@ -11,6 +11,7 @@ module.exports = function friendlyHex(buffer) {
 
     for (var i = 0; i < hex.length; ++i) {
         var index = Math.floor(i / 2);
+
         if (newValue[index] === undefined) {
             newValue[index] = '';
         }

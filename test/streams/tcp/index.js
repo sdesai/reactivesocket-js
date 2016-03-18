@@ -1,5 +1,5 @@
 'use strict';
 
-describe('TCP', function() {
+describe('TCP', function () {
     require('./ClientToServer.spec');
 });

@@ -9,7 +9,7 @@ var CONSTANTS = require('../../lib/protocol/constants');
 var ENCODING = 'UTF-8';
 
 describe('header', function () {
-    it('getFrameHeader should produce correct frame headers.', function() {
+    it('getFrameHeader should produce correct frame headers.', function () {
         var actual = getFrameHeader(256, 0xACAC, 0xBDBD, 4);
         var expected = new Buffer(12);
 
@@ -24,7 +24,7 @@ describe('header', function () {
 });
 
 describe('setup', function () {
-    it('should store metadata and data encoding.', function() {
+    it('should store metadata and data encoding.', function () {
         var expected = data.setupFrame;
         var actual = frame.getSetupFrame(
             data.SETUP_KEEP_ALIVE,
@@ -35,7 +35,7 @@ describe('setup', function () {
         compareFrames(expected, actual);
     });
 
-    it('setup frame -- should store payload and encoding.', function() {
+    it('setup frame -- should store payload and encoding.', function () {
         var setupMetaData = data.SETUP_META_DATA;
         var setupData = data.SETUP_DATA;
         var expected = data.setupFrameWithMeta;
@@ -54,7 +54,7 @@ describe('setup', function () {
 });
 
 describe('error', function () {
-    it('should create bad setup frame error with payload.', function() {
+    it('should create bad setup frame error with payload.', function () {
         var errorCode = CONSTANTS.ERROR_CODES.INVALID_SETUP;
         var expected = data.errorFrameWithData;
         var actual = frame.getErrorFrame(data.STREAM_ID, errorCode, {
@@ -65,7 +65,7 @@ describe('error', function () {
     });
 
     it('should create bad setup frame error with meta payload.',
-       function() {
+       function () {
            var errorCode = CONSTANTS.ERROR_CODES.INVALID_SETUP;
            var expected = data.errorFrameWithMeta;
            var actual = frame.getErrorFrame(data.STREAM_ID, errorCode, {

@@ -53,6 +53,10 @@ lint: node_modules $(ESLINT) $(JS_FILES)
 style: node_modules $(JSCS) $(JS_FILES)
 	$(JSCS) $(JS_FILES)
 
+.PHONY: fixstyle
+fixstyle: node_modules $(JSCS) $(JS_FILES)
+	$(JSCS) --fix $(JS_FILES)
+
 .PHONY: cover
 cover: node_modules $(ISTANBUL) $(IMOCHA)
 	@rm -rf ./coverage

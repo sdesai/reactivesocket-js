@@ -12,14 +12,14 @@ var Frame = require('./../../lib/protocol/frame');
 var MemoryTransport = require('./util/MemoryTransport');
 var ReactiveClient = require('./../../lib/streams/ReactiveClient');
 
-var noOp = function() {};
+var noOp = function () {};
 var PAYLOAD_ENCODING = 'UTF-8';
 var REQUEST_RESPONSE = CONSTANTS.TYPES.REQUEST_RESPONSE;
 var SETUP = CONSTANTS.TYPES.SETUP;
 var RESPONSE = CONSTANTS.TYPES.RESPONSE;
 
-describe('ReactiveClient', function() {
-    it('should go through the setup process.', function() {
+describe('ReactiveClient', function () {
+    it('should go through the setup process.', function () {
         var transport = new MemoryTransport();
         var stream  = transport.getNextStream();
         var client = new ReactiveClient(transport, {
@@ -41,7 +41,7 @@ describe('ReactiveClient', function() {
         compareFrames(setupFrame, actualFrame);
     });
 
-    it('should establish a connection through sending data.', function(done) {
+    it('should establish a connection through sending data.', function (done) {
         var transport = new MemoryTransport();
         var stream  = transport.getNextStream();
         var client = new ReactiveClient(transport, {
@@ -53,8 +53,7 @@ describe('ReactiveClient', function() {
         var onNext = sinon.spy();
         var request = fromNodeCallback(client.requestResponse.bind(client));
 
-        request({data: 'hello server'}).
-            do(onNext, noOp, function() {
+        request({data: 'hello server'}). do(onNext, noOp, function () {
                 expect(onWrite.callCount).to.equal(2);
                 expect(onNext.callCount).to.equal(1);
 
@@ -74,12 +73,11 @@ describe('ReactiveClient', function() {
                         data: new Buffer('hello client')
                     }
                 });
-            }).
-            subscribe(noOp, done, done);
+            }). subscribe(noOp, done, done);
     });
 
     it('should send multiple requests and have correct callback order.',
-        function(done) {
+        function (done) {
             var transport = new MemoryTransport();
             var stream  = transport.getNextStream();
             var client = new ReactiveClient(transport, {
@@ -97,39 +95,28 @@ describe('ReactiveClient', function() {
 
             // validates we are sync'd up.
             expect(client._ready).to.equal(true);
-            var r1 = Observable.
-                of(5).
-                flatMap(function(x) {
+            var r1 = Observable. of(5). flatMap(function (x) {
                     stream.setDelay(200);
                     return request({data: 'hello server3'});
-                }).
-                do(function(x) {
+                }). do(function (x) {
                     streamIds[0] = x.header.streamId;
                 });
-            var r2 = Observable.
-                of(5).
-                flatMap(function(x) {
+            var r2 = Observable. of(5). flatMap(function (x) {
                     stream.setDelay(100);
                     return request({data: 'hello server3'});
-                }).
-                do(function(x) {
+                }). do(function (x) {
                     streamIds[1] = x.header.streamId;
                 });
-            var r3 = Observable.
-                of(5).
-                flatMap(function(x) {
+            var r3 = Observable. of(5). flatMap(function (x) {
                     stream.setDelay(300);
                     return request({data: 'hello server3'});
-                }).
-                do(function(x) {
+                }). do(function (x) {
                     streamIds[2] = x.header.streamId;
                 });
 
-            Observable.
-                zip(r1, r2, r3, function(x1, x2, x3) {
+            Observable. zip(r1, r2, r3, function (x1, x2, x3) {
                     return true;
-                }).
-                do(noOp, noOp, function() {
+                }). do(noOp, noOp, function () {
 
                     // Ensure that the responses were tied to the streams Id.
                     expect(streamIds[0] < streamIds[1]).to.equals(true);
@@ -138,13 +125,12 @@ describe('ReactiveClient', function() {
                     // Ensures that the underlying implementation is not
                     // flooding the system with keys.
                     expect(Object.keys(client._processed)).to.deep.equals([]);
-                }).
-                subscribe(noOp, done, done);
+                }). subscribe(noOp, done, done);
         });
 });
 
 function autoRespond(outData) {
-    return function(buffer, frame) {
+    return function (buffer, frame) {
         // Upon request response we will send back through
         if (frame.header.type === REQUEST_RESPONSE) {
             var streamId = frame.header.streamId;

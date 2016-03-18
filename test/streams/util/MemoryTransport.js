@@ -34,7 +34,7 @@ MemoryTransport.prototype.establishConnection = function establishConnection() {
     if (this._delay) {
         var self = this;
 
-        setTimeout(function() {
+        setTimeout(function () {
             self.emit('est-con');
             self.emit('connection', stream, ++uniqueId);
         }, this._delay);

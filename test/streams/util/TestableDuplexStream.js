@@ -23,11 +23,11 @@ function TestableDuplexStream(options) {
 
 util.inherits(TestableDuplexStream, Duplex);
 
-TestableDuplexStream.prototype.setDelay = function(delay) {
+TestableDuplexStream.prototype.setDelay = function (delay) {
     this._options.wait = delay;
 };
 
-TestableDuplexStream.prototype._write = function(buffer, encoding, cb) {
+TestableDuplexStream.prototype._write = function (buffer, encoding, cb) {
     var frame = Frame.parseFrame(buffer);
     var res = this._onWrite.call(null, buffer, frame);
 
@@ -39,7 +39,7 @@ TestableDuplexStream.prototype._write = function(buffer, encoding, cb) {
             var self = this;
             var timeToWait = this._options.wait;
 
-            setTimeout(function() {
+            setTimeout(function () {
                 self.push(res);
             }, timeToWait);
         } else {
@@ -53,7 +53,7 @@ TestableDuplexStream.prototype._write = function(buffer, encoding, cb) {
     cb();
 };
 
-TestableDuplexStream.prototype._read = function() {
+TestableDuplexStream.prototype._read = function () {
     if (this._onRead) {
         this._onRead.apply(null, arguments);
     }
