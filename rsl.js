@@ -8,11 +8,9 @@ var client = new ReactiveSocket.ReactiveClient(transport);
 
 client.requestResponse({
     data: JSON.stringify({
-        paths: [["searches","star","Titles",{"from":2,"to":7},"displayString"],["searches","star","Titles",{"from":2,"to":7},"item","title"]],
+        paths: [['searches', 'star', 'Titles',{'from':2,'to':7},'displayString'],['searches','star','Titles',{'from':2,'to':7},'item','title']],
         method: 'get'
     })
 }, function _cb(err, data) {
     console.log(err, data);
 });
-
-

@@ -64,7 +64,7 @@ node_modules: package.json
 
 .PHONY: test
 test: node_modules $(MOCHA)
-	$(MOCHA) $(TEST_FILES)
+	$(MOCHA) --full-trace $(TEST_FILES)
 
 .PHONY: check
 check: lint style cover

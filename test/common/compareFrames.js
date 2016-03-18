@@ -5,14 +5,14 @@ var friendlyHex = require('./friendlyHex');
 
 var EXPECT_STRING = 'expects the buffers to have the same ';
 
-console.log('Compare frames breaks up data in the following way');
-console.log('0 - 4 length of frame');
-console.log('4 - 6 Type of frame');
-console.log('6 - 8 flags of frame');
-console.log('8+ rest of data of frame');
 
 /**
  * Compares the two buffers in a more readible way.
+ * Compare frames breaks up data in the following way'
+ * 0 - 4 length of frame'
+ * 4 - 6 Type of frame'
+ * 6 - 8 flags of frame
+ * 8+ rest of data of frame
  * @param {Buffer} expected -
  * @param {Buffer} actual -
  * @returns {undefined} -
