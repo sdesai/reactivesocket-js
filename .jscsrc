@@ -93,5 +93,6 @@
     "requireSpacesInForStatement": true,
     "requireSpacesInFunction": {
         "beforeOpeningCurlyBrace": true
-    }
+    },
+    "requireImportAlphabetized": true
 }

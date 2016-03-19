@@ -25,7 +25,7 @@ module.exports = {
 };
 
 function reqResFrame() {
-    var reqResBuffer = new Buffer(12).fill(0);
+    var reqResBuffer = new Buffer(12);
 
     // 12 bytes of data (0xc)
     reqResBuffer.writeUInt32BE(0xc, 0); // 4 bytes of data
