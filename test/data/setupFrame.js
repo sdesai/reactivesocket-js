@@ -35,7 +35,7 @@ module.exports = {
 };
 
 function setupFrame() {
-    var sFrame = new Buffer(24);
+    var sFrame = new Buffer(24).fill(0);
 
     sFrame.writeUInt32BE(0x00000024, 0); // streamId 0
     sFrame.writeUInt32BE(TYPES.SETUP << 16, 4); // type setup, no flags
@@ -44,10 +44,10 @@ function setupFrame() {
     sFrame.writeUInt32BE(SETUP_KEEP_ALIVE, 16);
     sFrame.writeUInt32BE(SETUP_MAX_LIFE, 20);
 
-    var encodingTypeBuffer = new Buffer(5);
+    var encodingTypeBuffer = new Buffer(5).fill(0);
     encodingTypeBuffer.write('UTF-8');
     var mimeLength = 'UTF-8'.length;
-    var lengthBuffer = new Buffer(1);
+    var lengthBuffer = new Buffer(1).fill(0);
     lengthBuffer.writeUInt8(mimeLength, 0);
     sFrame = Buffer.concat([sFrame, lengthBuffer, encodingTypeBuffer,
                            lengthBuffer, encodingTypeBuffer]);

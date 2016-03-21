@@ -29,7 +29,7 @@ module.exports = {
 };
 
 function errorFrame() {
-    var eFrame = new Buffer(16);
+    var eFrame = new Buffer(16).fill(0);
 
     eFrame.writeUInt32BE(0x00000000, 0);
     eFrame.writeUInt32BE(TYPES.ERROR << 16, 4);
