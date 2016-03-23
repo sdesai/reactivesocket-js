@@ -29,6 +29,7 @@
     "assert-plus": "^1.0.0",
     "bunyan": "^1.5.1",
     "bunyan-ring-buffer": "^1.0.0",
+    "vasync": "^1.6.4",
     "websocket-stream": "^3.1.0",
     "ws": "^0.8.0"
   },
