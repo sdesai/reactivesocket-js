@@ -46,7 +46,7 @@ describe('ws stream', function () {
     it('server and client streams pushing data and client close',
        function (done) {
         var expected = 2;
-        var endCount = 0;
+        var endCount = 0; // ensure we get end events on both server and client
         WS_SERVER.on('connection', function (socket) {
             WS_SERVER_STREAM = new WSStream({
                 log: LOG,

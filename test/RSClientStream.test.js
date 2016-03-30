@@ -56,7 +56,7 @@ describe('rs client stream', function () {
 
         compareFrames(DATA.setupFrameWithMeta, TRANSPORT_BUF.getContents());
     });
-    it('shuold serialize error frame', function () {
+    it('should serialize error frame', function () {
         S_STREAM.write({
             type: CONSTANTS.TYPES.ERROR,
             streamId: DATA.STREAM_ID,
@@ -69,7 +69,7 @@ describe('rs client stream', function () {
 
         compareFrames(DATA.errorFrameWithMeta, TRANSPORT_BUF.getContents());
     });
-    it('shuold serialize response frame', function () {
+    it('should serialize response frame', function () {
         var expected = setFlag(DATA.responseFrameWithMeta,
                                CONSTANTS.FLAGS.COMPLETE);
         S_STREAM.write({
