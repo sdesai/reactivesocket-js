@@ -1,0 +1,138 @@
+'use strict';
+
+var _ = require('lodash');
+var assert = require('chai').assert;
+var bunyan = require('bunyan');
+var ws = require('ws');
+
+var getRandomInt = require('../../common/getRandomInt');
+
+var ParseStream = require('../../../lib/streams/parseStream.js');
+var SerializeStream = require('../../../lib/streams/serializeStream');
+var WSStream = require('../../../lib/streams/transports/WSStream.js');
+
+var CONSTANTS = require('../../../lib/protocol/constants');
+var FLAGS = require('../../../lib/protocol/constants').FLAGS;
+var TYPES = require('../../../lib/protocol/constants').TYPES;
+var PORT = process.env.PORT || 1337;
+
+
+describe('RS WS Integ Tests', function () {
+    var LOG = bunyan.createLogger({
+        name: 'rs client stream tests',
+        level: process.env.LOG_LEVEL || bunyan.INFO,
+        serializers: bunyan.stdSerializers
+    });
+    LOG.addSerializers({
+        buffer: function (buf){ return buf.toString() }
+    });
+
+    var WS_SERVER;
+    var WS_CLIENT;
+    var WS_SERVER_STREAM;
+    var SERVER_S_STREAM = new SerializeStream({log: LOG});
+    var SERVER_P_STREAM = new ParseStream({log: LOG});
+    var WS_CLIENT_STREAM;
+    var CLIENT_S_STREAM = new SerializeStream({log: LOG});
+    var CLIENT_P_STREAM = new ParseStream({log: LOG});
+
+    before(function (done) {
+        WS_SERVER = new ws.Server({port: PORT});
+        WS_SERVER.on('connection', function (socket) {
+            WS_SERVER_STREAM = new WSStream({
+                log: LOG,
+                ws: socket
+            });
+            SERVER_S_STREAM.pipe(WS_SERVER_STREAM);
+            WS_SERVER_STREAM.pipe(SERVER_P_STREAM);
+        });
+
+        WS_CLIENT = new ws('ws://localhost:' + PORT);
+        WS_CLIENT.on('open', function () {
+            WS_CLIENT_STREAM = new WSStream({
+                log: LOG,
+                ws: WS_CLIENT
+            });
+
+            CLIENT_S_STREAM.pipe(WS_CLIENT_STREAM);
+            WS_CLIENT_STREAM.pipe(CLIENT_P_STREAM);
+            done();
+        });
+    });
+
+    after(function () {
+        // We really should not end this until we know the server is closed.
+        // Unfortunately ws does not provide an API to let us know that the
+        // server has been closed.
+        // This might introduce race conditions between tests.
+        WS_CLIENT.close();
+        WS_SERVER.close();
+    });
+
+    it('ws client/server serialize/parse frames', function (done) {
+        this.timeout(50000);
+        var isDone = 0;
+        var seedFrame = {
+            type: TYPES.SETUP,
+            flags: FLAGS.LEASE | FLAGS.STRICT,
+            keepalive: getRandomInt(0, Math.pow(2, 32)),
+            maxLifetime: getRandomInt(0, Math.pow(2, 32)),
+            version: CONSTANTS.VERSION,
+            metadataEncoding: 'utf-8',
+            dataEncoding: 'ascii',
+            metadata: 'We\'re just two lost souls swimming in a fish bowl',
+            data: 'year after year'
+        }
+
+        SERVER_P_STREAM.on('readable', function () {
+            var actualFrame = SERVER_P_STREAM.read();
+            assert.isObject(actualFrame.header);
+            assert.equal(actualFrame.header.streamId, 0,
+                         'setup frame id must be 0');
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.equal(actualFrame.header.flags,
+                         FLAGS.METADATA | seedFrame.flags);
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
+                                                       'metadata', 'flags',
+                                                       'type'));
+            assert.deepEqual(actualFrame.data.
+                             toString(actualFrame.setup.dataEncoding),
+                             seedFrame.data);
+            assert.deepEqual(actualFrame.metadata.
+                             toString(actualFrame.setup.metadataEncoding),
+                             seedFrame.metadata);
+            isDone++;
+            if (isDone === 2) {
+                done();
+            }
+        });
+
+        CLIENT_P_STREAM.on('readable', function () {
+            var actualFrame = CLIENT_P_STREAM.read();
+            assert.isObject(actualFrame.header);
+            assert.equal(actualFrame.header.streamId, 0,
+                         'setup frame id must be 0');
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.equal(actualFrame.header.flags,
+                         FLAGS.METADATA | seedFrame.flags);
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
+                                                       'metadata', 'flags',
+                                                       'type'));
+            assert.deepEqual(actualFrame.data.
+                             toString(actualFrame.setup.dataEncoding),
+                             seedFrame.data);
+            assert.deepEqual(actualFrame.metadata.
+                             toString(actualFrame.setup.metadataEncoding),
+                             seedFrame.metadata);
+            isDone++;
+            if (isDone === 2) {
+                done();
+            }
+        });
+
+        SERVER_S_STREAM.write(seedFrame);
+        CLIENT_S_STREAM.write(seedFrame);
+    });
+});
