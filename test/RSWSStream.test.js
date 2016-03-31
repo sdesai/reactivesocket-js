@@ -35,7 +35,7 @@ var SERVER_FRAME = {
     type: CONSTANTS.TYPES.RESPONSE,
     streamId: DATA.STREAM_ID,
     payload: {
-        data: DATA.RES_DATA,
+        data: 'Remember when you were young, you shone like the sun.',
         metadata: DATA.RES_META
     },
     isCompleted: true
