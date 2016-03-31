@@ -82,15 +82,35 @@ describe('error', function () {
             errorCode: getRandomInt(0, Math.pow(2, 16)),
             data: 'Running over the same old ground',
             metadata: 'What have we found'
-        }
+        };
 
         var actualFrame = frame.parseFrame(frame.getErrorFrame(seedFrame));
         assert.isObject(actualFrame.header);
         assert.equal(actualFrame.header.streamId, seedFrame.streamId);
         assert.equal(actualFrame.header.type, CONSTANTS.TYPES.ERROR);
+        assert.equal(actualFrame.header.flags, CONSTANTS.FLAGS.METADATA);
         assert.equal(actualFrame.errorCode, seedFrame.errorCode);
         assert.equal(actualFrame.metadata.toString(), seedFrame.metadata);
         assert.equal(actualFrame.data.toString(), seedFrame.data);
+    });
+});
+
+describe('request response', function cb() {
+    it('encode/decode', function () {
+        var seedFrame = {
+            streamId: getRandomInt(0, Math.pow(2, 32)),
+            metadata: 'Big Suge in the lolo, bounce and turn',
+            data: 'I hit the studio and drop a jewel, hoping it pay'
+        };
+
+        var actualFrame = frame.parseFrame(frame.getReqResFrame(seedFrame));
+        assert.isObject(actualFrame.header);
+        assert.equal(actualFrame.header.streamId, seedFrame.streamId);
+        assert.equal(actualFrame.header.type, CONSTANTS.TYPES.REQUEST_RESPONSE);
+        assert.equal(actualFrame.header.flags, CONSTANTS.FLAGS.METADATA);
+        assert.equal(actualFrame.metadata.toString(), seedFrame.metadata);
+        assert.equal(actualFrame.data.toString(), seedFrame.data);
+
     });
 });
 
