@@ -78,6 +78,72 @@ describe('setup', function () {
                          toString(actualFrame.setup.metadataEncoding),
                          seedFrame.metadata);
     });
+    it('encode/decode with lease, strict, and data', function () {
+        var seedFrame = {
+            flags: FLAGS.LEASE | FLAGS.STRICT,
+            keepalive: getRandomInt(0, Math.pow(2, 32)),
+            maxLifetime: getRandomInt(0, Math.pow(2, 32)),
+            version: CONSTANTS.VERSION,
+            metadataEncoding: 'utf-8',
+            dataEncoding: 'ascii',
+            data: 'year after year'
+        };
+        var actualFrame = frame.parseFrame(frame.getSetupFrame(seedFrame));
+        assert.isObject(actualFrame.header);
+        assert.equal(actualFrame.header.streamId, 0,
+                     'setup frame id must be 0');
+        assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+        assert.equal(actualFrame.header.flags, seedFrame.flags);
+        assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+        assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
+                                                   'metadata', 'flags'));
+        assert.deepEqual(actualFrame.data.
+                         toString(actualFrame.setup.dataEncoding),
+                         seedFrame.data);
+    });
+    it('encode/decode with lease, strict, md', function () {
+        var seedFrame = {
+            flags: FLAGS.LEASE | FLAGS.STRICT,
+            keepalive: getRandomInt(0, Math.pow(2, 32)),
+            maxLifetime: getRandomInt(0, Math.pow(2, 32)),
+            version: CONSTANTS.VERSION,
+            metadataEncoding: 'utf-8',
+            dataEncoding: 'ascii',
+            metadata: 'We\'re just two lost souls swimming in a fish bowl'
+        };
+        var actualFrame = frame.parseFrame(frame.getSetupFrame(seedFrame));
+        assert.isObject(actualFrame.header);
+        assert.equal(actualFrame.header.streamId, 0,
+                     'setup frame id must be 0');
+        assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+        assert.equal(actualFrame.header.flags,
+                     FLAGS.METADATA | seedFrame.flags);
+        assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+        assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
+                                                   'metadata', 'flags'));
+        assert.deepEqual(actualFrame.metadata.
+                         toString(actualFrame.setup.metadataEncoding),
+                         seedFrame.metadata);
+    });
+    it('encode/decode with lease, strict', function () {
+        var seedFrame = {
+            flags: FLAGS.LEASE | FLAGS.STRICT,
+            keepalive: getRandomInt(0, Math.pow(2, 32)),
+            maxLifetime: getRandomInt(0, Math.pow(2, 32)),
+            version: CONSTANTS.VERSION,
+            metadataEncoding: 'utf-8',
+            dataEncoding: 'ascii'
+        };
+        var actualFrame = frame.parseFrame(frame.getSetupFrame(seedFrame));
+        assert.isObject(actualFrame.header);
+        assert.equal(actualFrame.header.streamId, 0,
+                     'setup frame id must be 0');
+        assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+        assert.equal(actualFrame.header.flags, seedFrame.flags);
+        assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+        assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
+                                                   'metadata', 'flags'));
+    });
 });
 
 describe('error', function () {
@@ -139,6 +205,8 @@ describe('response', function () {
     });
 });
 
+
+// private functions
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
