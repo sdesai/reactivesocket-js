@@ -8,7 +8,7 @@ var sinon = require('sinon');
 var vasync = require('vasync');
 var ws = require('ws');
 
-var WSStream = require('../lib/streams/transports/WSStream.js');
+var WSStream = require('../../lib/streams/transports/WSStream.js');
 
 var PORT = process.env.PORT || 1337;
 

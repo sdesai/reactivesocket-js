@@ -5,6 +5,7 @@ var assert = require('chai').assert;
 
 var compareFrames = require('../common/compareFrames');
 var frame = require('../../lib/protocol/frame');
+var getRandomInt = require('../common/getRandomInt');
 
 var CONSTANTS = require('../../lib/protocol/constants');
 var FLAGS = CONSTANTS.FLAGS;
@@ -27,7 +28,7 @@ describe('header', function () {
 
         compareFrames(expected, actual);
     });
-    it('encode/parse', function () {
+    it('encode/decode', function () {
         var seedFrame = {
             length: 0, // 0 since we have no additional frame
             type: CONSTANTS.TYPES.REQUEST_RESPONSE,
@@ -204,9 +205,3 @@ describe('response', function () {
         assert.equal(actualFrame.data.toString(), seedFrame.data);
     });
 });
-
-
-// private functions
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-}
