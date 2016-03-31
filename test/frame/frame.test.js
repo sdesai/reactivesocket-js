@@ -7,6 +7,7 @@ var compareFrames = require('../common/compareFrames');
 var frame = require('../../lib/protocol/frame');
 
 var CONSTANTS = require('../../lib/protocol/constants');
+var FLAGS = CONSTANTS.FLAGS;
 
 describe('header', function () {
     it('getFrameHeader should produce correct frame headers.', function () {
@@ -49,8 +50,9 @@ describe('header', function () {
 });
 
 describe('setup', function () {
-    it('encode/decode with md and data', function () {
+    it('encode/decode with lease, strict, md and data', function () {
         var seedFrame = {
+            flags: FLAGS.LEASE | FLAGS.STRICT,
             keepalive: getRandomInt(0, Math.pow(2, 32)),
             maxLifetime: getRandomInt(0, Math.pow(2, 32)),
             version: CONSTANTS.VERSION,
@@ -64,8 +66,11 @@ describe('setup', function () {
         assert.equal(actualFrame.header.streamId, 0,
                      'setup frame id must be 0');
         assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+        assert.equal(actualFrame.header.flags,
+                     FLAGS.METADATA | seedFrame.flags);
+        assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
         assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
-                                                   'metadata'));
+                                                   'metadata', 'flags'));
         assert.deepEqual(actualFrame.data.
                          toString(actualFrame.setup.dataEncoding),
                          seedFrame.data);
@@ -111,6 +116,26 @@ describe('request response', function cb() {
         assert.equal(actualFrame.metadata.toString(), seedFrame.metadata);
         assert.equal(actualFrame.data.toString(), seedFrame.data);
 
+    });
+});
+
+describe('response', function () {
+    it('encode/decode w/ data, metadata, and complete', function () {
+        var seedFrame = {
+            streamId: getRandomInt(0, Math.pow(2, 32)),
+            flags: CONSTANTS.FLAGS.COMPLETE,
+            metadata: 'I bet you got it twisted you don\'t know who to trust',
+            data: 'A five-double-oh - Benz flauntin flashy rings'
+        }
+
+        var actualFrame = frame.parseFrame(frame.getResponseFrame(seedFrame));
+        assert.isObject(actualFrame.header);
+        assert.equal(actualFrame.header.streamId, seedFrame.streamId);
+        assert.equal(actualFrame.header.type, CONSTANTS.TYPES.RESPONSE);
+        assert.equal(actualFrame.header.flags,
+                     CONSTANTS.FLAGS.METADATA | CONSTANTS.FLAGS.COMPLETE);
+        assert.equal(actualFrame.metadata.toString(), seedFrame.metadata);
+        assert.equal(actualFrame.data.toString(), seedFrame.data);
     });
 });
 
