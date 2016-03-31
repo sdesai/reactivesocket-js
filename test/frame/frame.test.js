@@ -6,9 +6,7 @@ var assert = require('chai').assert;
 var compareFrames = require('../common/compareFrames');
 var frame = require('../../lib/protocol/frame');
 
-var DATA = require('../data');
 var CONSTANTS = require('../../lib/protocol/constants');
-var ENCODING = 'UTF-8';
 
 describe('header', function () {
     it('getFrameHeader should produce correct frame headers.', function () {
@@ -51,41 +49,13 @@ describe('header', function () {
 });
 
 describe('setup', function () {
-    it('should store metadata and data encoding.', function () {
-        var expected = DATA.setupFrame;
-        var actual = frame.getSetupFrame({
-            keepalive: DATA.SETUP_KEEP_ALIVE,
-            maxLifetime: DATA.SETUP_MAX_LIFE,
-            metadataEncoding: ENCODING,
-            dataEncoding: ENCODING
-        });
-        compareFrames(expected, actual);
-    });
-
-    //it('should store payload and encoding.', function () {
-        //var setupMetaData = DATA.SETUP_META_DATA;
-        //var setupData = DATA.SETUP_DATA;
-        //var expected = DATA.setupFrameWithMeta;
-        //var actual = frame.getSetupFrame({
-            //keepalive: DATA.SETUP_KEEP_ALIVE,
-            //maxLifetime: DATA.SETUP_MAX_LIFE,
-            //metadataEncoding: ENCODING,
-            //dataEncoding: ENCODING,
-            //payload: {
-                //metadata: setupMetaData,
-                //data: setupData
-            //}
-        //});
-
-        //compareFrames(expected, actual);
-    //});
-
-    it('encode/decode', function () {
+    it('encode/decode with md and data', function () {
         var seedFrame = {
             keepalive: getRandomInt(0, Math.pow(2, 32)),
             maxLifetime: getRandomInt(0, Math.pow(2, 32)),
-            metadataEncoding: 'somerandomencoding',
-            dataEncoding: 'someotherrandomencoding',
+            version: CONSTANTS.VERSION,
+            metadataEncoding: 'utf-8',
+            dataEncoding: 'ascii',
             metadata: 'We\'re just two lost souls swimming in a fish bowl',
             data: 'year after year'
         };
@@ -96,56 +66,31 @@ describe('setup', function () {
         assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
         assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
                                                    'metadata'));
-        assert.deepEqual(actualFrame.data, seedFrame.data);
-        assert.deepEqual(actualFrame.metadata, seedFrame.metadata);
+        assert.deepEqual(actualFrame.data.
+                         toString(actualFrame.setup.dataEncoding),
+                         seedFrame.data);
+        assert.deepEqual(actualFrame.metadata.
+                         toString(actualFrame.setup.metadataEncoding),
+                         seedFrame.metadata);
     });
 });
 
 describe('error', function () {
-    it('should create bad setup frame error with payload.data', function () {
-        var errorCode = CONSTANTS.ERROR_CODES.INVALID_SETUP;
-        var expected = DATA.errorFrameWithData;
-        var actual = frame.getErrorFrame({
-            streamId: DATA.STREAM_ID,
-            errorCode: errorCode,
-            payload: {
-                data: DATA.ERROR_DATA
-            }
-        });
-
-        compareFrames(expected, actual);
-    });
-
-    it('should create bad setup frame error with payload.',
-       function () {
-           var errorCode = CONSTANTS.ERROR_CODES.INVALID_SETUP;
-           var expected = DATA.errorFrameWithMeta;
-           var actual = frame.getErrorFrame({
-               streamId: DATA.STREAM_ID,
-               errorCode: errorCode,
-               payload: {
-                   data: DATA.ERROR_DATA,
-                   metadata: DATA.ERROR_META_DATA
-               }
-           });
-
-           compareFrames(expected, actual);
-       });
-
     it('encode/decode', function () {
         var seedFrame = {
             streamId: getRandomInt(0, Math.pow(2, 32)),
             errorCode: getRandomInt(0, Math.pow(2, 16)),
-            payload: {
-                data: 'Running over the same old ground',
-                metadata: 'What have we found'
-            }
+            data: 'Running over the same old ground',
+            metadata: 'What have we found'
         }
 
         var actualFrame = frame.parseFrame(frame.getErrorFrame(seedFrame));
-
-        console.log(seedFrame);
-        console.log(actualFrame);
+        assert.isObject(actualFrame.header);
+        assert.equal(actualFrame.header.streamId, seedFrame.streamId);
+        assert.equal(actualFrame.header.type, CONSTANTS.TYPES.ERROR);
+        assert.equal(actualFrame.errorCode, seedFrame.errorCode);
+        assert.equal(actualFrame.metadata.toString(), seedFrame.metadata);
+        assert.equal(actualFrame.data.toString(), seedFrame.data);
     });
 });
 
