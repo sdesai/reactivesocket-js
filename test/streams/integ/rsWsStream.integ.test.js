@@ -70,7 +70,6 @@ describe('RS WS Integ Tests', function () {
     });
 
     it('ws client/server serialize/parse frames', function (done) {
-        this.timeout(50000);
         var isDone = 0;
         var seedFrame = {
             type: TYPES.SETUP,
