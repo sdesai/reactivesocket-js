@@ -3,7 +3,8 @@
 var _ = require('lodash');
 var assert = require('chai').assert;
 var bunyan = require('bunyan');
-var ws = require('ws');
+
+var Ws = require('ws');
 
 var getRandomInt = require('../../common/getRandomInt');
 
@@ -24,7 +25,9 @@ describe('RS WS Integ Tests', function () {
         serializers: bunyan.stdSerializers
     });
     LOG.addSerializers({
-        buffer: function (buf){ return buf.toString() }
+        buffer: function (buf) {
+            return buf.toString();
+        }
     });
 
     var WS_SERVER;
@@ -37,7 +40,7 @@ describe('RS WS Integ Tests', function () {
     var CLIENT_P_STREAM = new ParseStream({log: LOG});
 
     before(function (done) {
-        WS_SERVER = new ws.Server({port: PORT});
+        WS_SERVER = new Ws.Server({port: PORT});
         WS_SERVER.on('connection', function (socket) {
             WS_SERVER_STREAM = new WSStream({
                 log: LOG,
@@ -47,7 +50,7 @@ describe('RS WS Integ Tests', function () {
             WS_SERVER_STREAM.pipe(SERVER_P_STREAM);
         });
 
-        WS_CLIENT = new ws('ws://localhost:' + PORT);
+        WS_CLIENT = new Ws('ws://localhost:' + PORT);
         WS_CLIENT.on('open', function () {
             WS_CLIENT_STREAM = new WSStream({
                 log: LOG,
@@ -81,7 +84,7 @@ describe('RS WS Integ Tests', function () {
             dataEncoding: 'ascii',
             metadata: 'We\'re just two lost souls swimming in a fish bowl',
             data: 'year after year'
-        }
+        };
 
         SERVER_P_STREAM.on('readable', function () {
             var actualFrame = SERVER_P_STREAM.read();
@@ -95,13 +98,14 @@ describe('RS WS Integ Tests', function () {
             assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
                                                        'metadata', 'flags',
                                                        'type'));
-            assert.deepEqual(actualFrame.data.
-                             toString(actualFrame.setup.dataEncoding),
+            assert.deepEqual(actualFrame.data
+                             .toString(actualFrame.setup.dataEncoding),
                              seedFrame.data);
-            assert.deepEqual(actualFrame.metadata.
-                             toString(actualFrame.setup.metadataEncoding),
+            assert.deepEqual(actualFrame.metadata
+                             .toString(actualFrame.setup.metadataEncoding),
                              seedFrame.metadata);
             isDone++;
+
             if (isDone === 2) {
                 done();
             }
@@ -119,13 +123,14 @@ describe('RS WS Integ Tests', function () {
             assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
                                                        'metadata', 'flags',
                                                        'type'));
-            assert.deepEqual(actualFrame.data.
-                             toString(actualFrame.setup.dataEncoding),
+            assert.deepEqual(actualFrame.data
+                             .toString(actualFrame.setup.dataEncoding),
                              seedFrame.data);
-            assert.deepEqual(actualFrame.metadata.
-                             toString(actualFrame.setup.metadataEncoding),
+            assert.deepEqual(actualFrame.metadata
+                             .toString(actualFrame.setup.metadataEncoding),
                              seedFrame.metadata);
             isDone++;
+
             if (isDone === 2) {
                 done();
             }

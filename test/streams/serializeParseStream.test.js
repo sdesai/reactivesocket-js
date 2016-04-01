@@ -38,7 +38,7 @@ describe('serialize/parse streams', function () {
             dataEncoding: 'ascii',
             metadata: 'We\'re just two lost souls swimming in a fish bowl',
             data: 'year after year'
-        }
+        };
         P_STREAM.once('data', function (actualFrame) {
             assert.isObject(actualFrame.header);
             assert.equal(actualFrame.header.streamId, 0,
@@ -50,11 +50,11 @@ describe('serialize/parse streams', function () {
             assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
                                                        'metadata', 'flags',
                                                        'type'));
-            assert.deepEqual(actualFrame.data.
-                             toString(actualFrame.setup.dataEncoding),
+            assert.deepEqual(actualFrame.data
+                             .toString(actualFrame.setup.dataEncoding),
                              seedFrame.data);
-            assert.deepEqual(actualFrame.metadata.
-                             toString(actualFrame.setup.metadataEncoding),
+            assert.deepEqual(actualFrame.metadata
+                             .toString(actualFrame.setup.metadataEncoding),
                              seedFrame.metadata);
             done();
         });
@@ -105,7 +105,7 @@ describe('serialize/parse streams', function () {
             flags: CONSTANTS.FLAGS.COMPLETE,
             metadata: 'I bet you got it twisted you don\'t know who to trust',
             data: 'A five-double-oh - Benz flauntin flashy rings'
-        }
+        };
         P_STREAM.once('data', function (actualFrame) {
             assert.isObject(actualFrame.header);
             assert.equal(actualFrame.header.streamId, seedFrame.streamId);

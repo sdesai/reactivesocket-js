@@ -6,7 +6,8 @@ var assert = require('chai').assert;
 var bunyan = require('bunyan');
 var sinon = require('sinon');
 var vasync = require('vasync');
-var ws = require('ws');
+
+var Ws = require('ws');
 
 var WSStream = require('../../lib/streams/transports/WSStream.js');
 
@@ -29,7 +30,7 @@ describe('ws stream', function () {
     var WS_CLIENT_STREAM;
 
     beforeEach(function (done) {
-        WS_SERVER = new ws.Server({port: PORT});
+        WS_SERVER = new Ws.Server({port: PORT});
         WS_SERVER.on('listening', done);
     });
 
@@ -60,6 +61,7 @@ describe('ws stream', function () {
             WS_SERVER_STREAM.on('readable', function () {
                 srCount++;
                 var read = WS_SERVER_STREAM.read();
+
                 if (srCount === 1) {
                     assert.equal(read, CLIENT_MSG);
                     expected--;
@@ -69,6 +71,7 @@ describe('ws stream', function () {
 
             WS_SERVER_STREAM.on('end', function () {
                 endCount++;
+
                 if (endCount === 2) {
                     assert.equal(0, expected);
                     done();
@@ -76,7 +79,7 @@ describe('ws stream', function () {
             });
         });
 
-        WS_CLIENT = new ws('ws://localhost:' + PORT);
+        WS_CLIENT = new Ws('ws://localhost:' + PORT);
         WS_CLIENT.on('open', function () {
             WS_CLIENT_STREAM = new WSStream({
                 log: LOG,
@@ -89,6 +92,7 @@ describe('ws stream', function () {
             WS_CLIENT_STREAM.on('readable', function () {
                 var read = WS_CLIENT_STREAM.read();
                 crCount++;
+
                 if (crCount === 1) {
                     assert.equal(read.toString(), SERVER_MSG);
                     expected--;
@@ -98,6 +102,7 @@ describe('ws stream', function () {
 
             WS_CLIENT_STREAM.on('end', function () {
                 endCount++;
+
                 if (endCount === 2) {
                     assert.equal(0, expected);
                     done();
@@ -130,7 +135,7 @@ describe('ws stream', function () {
 
         });
 
-        WS_CLIENT = new ws('ws://localhost:' + PORT);
+        WS_CLIENT = new Ws('ws://localhost:' + PORT);
         WS_CLIENT.on('open', function () {
             console.log('open');
             WS_CLIENT_STREAM = new WSStream({
@@ -140,9 +145,9 @@ describe('ws stream', function () {
 
             // send a bunch of messages, this should over flow the highwater
             // mark and cause the server readable stream to pause.
-            vasync.forEachParallel({ 'func': function(arg, cb) {
+            vasync.forEachParallel({ func: function (arg, cb) {
                 WS_CLIENT_STREAM.write(CLIENT_MSG, null, cb);
-            },'inputs': [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+            },inputs: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
             function cb(err, results) {
                 assert.ifError(err);
                 WS_CLIENT.close();

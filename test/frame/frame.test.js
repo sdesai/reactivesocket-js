@@ -43,7 +43,7 @@ describe('header', function () {
                 type: seedFrame.type,
                 streamId: seedFrame.streamId
             }
-        }
+        };
 
         var actualFrame = frame.parseFrame(frame.getFrameHeader(seedFrame));
         assert.deepEqual(expectedParsedFrame, actualFrame);
@@ -72,11 +72,11 @@ describe('setup', function () {
         assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
         assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
                                                    'metadata', 'flags'));
-        assert.deepEqual(actualFrame.data.
-                         toString(actualFrame.setup.dataEncoding),
+        assert.deepEqual(actualFrame.data
+                         .toString(actualFrame.setup.dataEncoding),
                          seedFrame.data);
-        assert.deepEqual(actualFrame.metadata.
-                         toString(actualFrame.setup.metadataEncoding),
+        assert.deepEqual(actualFrame.metadata
+                         .toString(actualFrame.setup.metadataEncoding),
                          seedFrame.metadata);
     });
     it('encode/decode with lease, strict, and data', function () {
@@ -98,8 +98,8 @@ describe('setup', function () {
         assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
         assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
                                                    'metadata', 'flags'));
-        assert.deepEqual(actualFrame.data.
-                         toString(actualFrame.setup.dataEncoding),
+        assert.deepEqual(actualFrame.data
+                         .toString(actualFrame.setup.dataEncoding),
                          seedFrame.data);
     });
     it('encode/decode with lease, strict, md', function () {
@@ -122,8 +122,8 @@ describe('setup', function () {
         assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
         assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
                                                    'metadata', 'flags'));
-        assert.deepEqual(actualFrame.metadata.
-                         toString(actualFrame.setup.metadataEncoding),
+        assert.deepEqual(actualFrame.metadata
+                         .toString(actualFrame.setup.metadataEncoding),
                          seedFrame.metadata);
     });
     it('encode/decode with lease, strict', function () {
@@ -193,7 +193,7 @@ describe('response', function () {
             flags: CONSTANTS.FLAGS.COMPLETE,
             metadata: 'I bet you got it twisted you don\'t know who to trust',
             data: 'A five-double-oh - Benz flauntin flashy rings'
-        }
+        };
 
         var actualFrame = frame.parseFrame(frame.getResponseFrame(seedFrame));
         assert.isObject(actualFrame.header);
