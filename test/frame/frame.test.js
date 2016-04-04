@@ -8,6 +8,8 @@ var getRandomInt = require('../common/getRandomInt');
 
 var CONSTANTS = require('../../lib/protocol/constants');
 var FLAGS = CONSTANTS.FLAGS;
+var METADATA_ENCODING = 'utf8';
+var DATA_ENCODING = 'binary';
 
 describe('header', function () {
     it('encode/decode', function () {
@@ -41,8 +43,8 @@ describe('setup', function () {
             keepalive: getRandomInt(0, Math.pow(2, 32)),
             maxLifetime: getRandomInt(0, Math.pow(2, 32)),
             version: CONSTANTS.VERSION,
-            metadataEncoding: 'utf-8',
-            dataEncoding: 'ascii',
+            metadataEncoding: METADATA_ENCODING,
+            dataEncoding: DATA_ENCODING,
             metadata: 'We\'re just two lost souls swimming in a fish bowl',
             data: 'year after year'
         };
@@ -65,8 +67,8 @@ describe('setup', function () {
             keepalive: getRandomInt(0, Math.pow(2, 32)),
             maxLifetime: getRandomInt(0, Math.pow(2, 32)),
             version: CONSTANTS.VERSION,
-            metadataEncoding: 'utf-8',
-            dataEncoding: 'ascii',
+            metadataEncoding: METADATA_ENCODING,
+            dataEncoding: DATA_ENCODING,
             data: 'year after year'
         };
         var actualFrame = frame.parseFrame(frame.getSetupFrame(seedFrame));
@@ -86,8 +88,8 @@ describe('setup', function () {
             keepalive: getRandomInt(0, Math.pow(2, 32)),
             maxLifetime: getRandomInt(0, Math.pow(2, 32)),
             version: CONSTANTS.VERSION,
-            metadataEncoding: 'utf-8',
-            dataEncoding: 'ascii',
+            metadataEncoding: METADATA_ENCODING,
+            dataEncoding: DATA_ENCODING,
             metadata: 'We\'re just two lost souls swimming in a fish bowl'
         };
         var actualFrame = frame.parseFrame(frame.getSetupFrame(seedFrame));
@@ -108,8 +110,8 @@ describe('setup', function () {
             keepalive: getRandomInt(0, Math.pow(2, 32)),
             maxLifetime: getRandomInt(0, Math.pow(2, 32)),
             version: CONSTANTS.VERSION,
-            metadataEncoding: 'utf-8',
-            dataEncoding: 'ascii'
+            metadataEncoding: METADATA_ENCODING,
+            dataEncoding: DATA_ENCODING
         };
         var actualFrame = frame.parseFrame(frame.getSetupFrame(seedFrame));
         assert.isObject(actualFrame.header);
@@ -129,8 +131,8 @@ describe('error', function () {
             errorCode: getRandomInt(0, Math.pow(2, 16)),
             data: 'Running over the same old ground',
             metadata: 'What have we found',
-            metadataEncoding: 'utf-8',
-            dataEncoding: 'ascii'
+            metadataEncoding: METADATA_ENCODING,
+            dataEncoding: DATA_ENCODING
         };
 
         var actualFrame = frame.parseFrame(frame.getErrorFrame(seedFrame));
@@ -147,8 +149,8 @@ describe('error', function () {
 describe('request response', function cb() {
     it('encode/decode', function () {
         var seedFrame = {
-            metadataEncoding: 'utf-8',
-            dataEncoding: 'ascii',
+            metadataEncoding: METADATA_ENCODING,
+            dataEncoding: DATA_ENCODING,
             streamId: getRandomInt(0, Math.pow(2, 32)),
             metadata: 'Big Suge in the lolo, bounce and turn',
             data: 'I hit the studio and drop a jewel, hoping it pay'
@@ -168,8 +170,8 @@ describe('request response', function cb() {
 describe('response', function () {
     it('encode/decode w/ data, metadata, and complete', function () {
         var seedFrame = {
-            metadataEncoding: 'utf-8',
-            dataEncoding: 'ascii',
+            metadataEncoding: METADATA_ENCODING,
+            dataEncoding: DATA_ENCODING,
             streamId: getRandomInt(0, Math.pow(2, 32)),
             flags: CONSTANTS.FLAGS.COMPLETE,
             metadata: 'I bet you got it twisted you don\'t know who to trust',
