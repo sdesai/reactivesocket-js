@@ -1,6 +1,5 @@
 'use strict';
 
-var _ = require('lodash');
 var assert = require('chai').assert;
 var bunyan = require('bunyan');
 
@@ -54,7 +53,9 @@ describe('connection', function () {
                     transport: {
                         stream: WS_CLIENT_STREAM
                     },
-                    type: 'client'
+                    type: 'client',
+                    metadataEncoding: 'utf-8',
+                    dataEncoding: 'binary'
                 });
 
                 CLIENT_CON.on('ready', done);
@@ -70,16 +71,12 @@ describe('connection', function () {
         });
     });
 
-    afterEach(function () {
-        //WS_CLIENT.close();
-    });
-
     after(function () {
         WS_CLIENT.close();
         WS_SERVER.close();
     });
 
-    it ('req/res', function (done) {
+    it('req/res', function (done) {
         var expectedReq = {
             data: 'so much trouble in the world',
             metadata: 'can\'t nobody feel your pain'
@@ -90,7 +87,7 @@ describe('connection', function () {
             metadata: 'My girl said I need a raise, how long will she last?'
         };
 
-        SERVER_CON.on('request', function(req) {
+        SERVER_CON.on('request', function (req) {
             assert.deepEqual(req.request, expectedReq);
             req.response(expectedRes);
         });
@@ -114,7 +111,7 @@ describe('connection', function () {
             metadata: 'My girl said I need a raise, how long will she last?'
         };
 
-        SERVER_CON.on('request', function(req) {
+        SERVER_CON.on('request', function (req) {
             assert.deepEqual(req.request, expectedReq);
             req.response(expectedRes);
         });
