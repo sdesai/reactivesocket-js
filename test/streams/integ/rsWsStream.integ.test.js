@@ -17,6 +17,9 @@ var FLAGS = require('../../../lib/protocol/constants').FLAGS;
 var TYPES = require('../../../lib/protocol/constants').TYPES;
 var PORT = process.env.PORT || 1337;
 
+var METADATA_ENCODING = 'binary';
+var DATA_ENCODING = 'ascii';
+
 
 describe('RS WS Integ Tests', function () {
     var LOG = bunyan.createLogger({
@@ -33,11 +36,27 @@ describe('RS WS Integ Tests', function () {
     var WS_SERVER;
     var WS_CLIENT;
     var WS_SERVER_STREAM;
-    var SERVER_S_STREAM = new SerializeStream({log: LOG});
-    var SERVER_P_STREAM = new ParseStream({log: LOG});
+    var SERVER_S_STREAM = new SerializeStream({
+        log: LOG,
+        metadataEncoding: METADATA_ENCODING,
+        dataEncoding: DATA_ENCODING
+    });
+    var SERVER_P_STREAM = new ParseStream({
+        log: LOG,
+        metadataEncoding: METADATA_ENCODING,
+        dataEncoding: DATA_ENCODING
+    });
     var WS_CLIENT_STREAM;
-    var CLIENT_S_STREAM = new SerializeStream({log: LOG});
-    var CLIENT_P_STREAM = new ParseStream({log: LOG});
+    var CLIENT_S_STREAM = new SerializeStream({
+        log: LOG,
+        metadataEncoding: METADATA_ENCODING,
+        dataEncoding: DATA_ENCODING
+    });
+    var CLIENT_P_STREAM = new ParseStream({
+        log: LOG,
+        metadataEncoding: METADATA_ENCODING,
+        dataEncoding: DATA_ENCODING
+    });
 
     before(function (done) {
         WS_SERVER = new Ws.Server({port: PORT});
@@ -80,8 +99,8 @@ describe('RS WS Integ Tests', function () {
             keepalive: getRandomInt(0, Math.pow(2, 32)),
             maxLifetime: getRandomInt(0, Math.pow(2, 32)),
             version: CONSTANTS.VERSION,
-            metadataEncoding: 'utf-8',
-            dataEncoding: 'ascii',
+            metadataEncoding: METADATA_ENCODING,
+            dataEncoding: DATA_ENCODING,
             metadata: 'We\'re just two lost souls swimming in a fish bowl',
             data: 'year after year'
         };
@@ -98,12 +117,8 @@ describe('RS WS Integ Tests', function () {
             assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
                                                        'metadata', 'flags',
                                                        'type'));
-            assert.deepEqual(actualFrame.data
-                             .toString(actualFrame.setup.dataEncoding),
-                             seedFrame.data);
-            assert.deepEqual(actualFrame.metadata
-                             .toString(actualFrame.setup.metadataEncoding),
-                             seedFrame.metadata);
+            assert.deepEqual(actualFrame.data, seedFrame.data);
+            assert.deepEqual(actualFrame.metadata, seedFrame.metadata);
             isDone++;
 
             if (isDone === 2) {
@@ -123,12 +138,8 @@ describe('RS WS Integ Tests', function () {
             assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
                                                        'metadata', 'flags',
                                                        'type'));
-            assert.deepEqual(actualFrame.data
-                             .toString(actualFrame.setup.dataEncoding),
-                             seedFrame.data);
-            assert.deepEqual(actualFrame.metadata
-                             .toString(actualFrame.setup.metadataEncoding),
-                             seedFrame.metadata);
+            assert.deepEqual(actualFrame.data, seedFrame.data);
+            assert.deepEqual(actualFrame.metadata, seedFrame.metadata);
             isDone++;
 
             if (isDone === 2) {
