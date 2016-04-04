@@ -3,7 +3,6 @@
 var _ = require('lodash');
 var assert = require('chai').assert;
 
-var compareFrames = require('../common/compareFrames');
 var frame = require('../../lib/protocol/frame');
 var getRandomInt = require('../common/getRandomInt');
 
@@ -11,23 +10,6 @@ var CONSTANTS = require('../../lib/protocol/constants');
 var FLAGS = CONSTANTS.FLAGS;
 
 describe('header', function () {
-    it('getFrameHeader should produce correct frame headers.', function () {
-        var actual = frame.getFrameHeader({
-            length: 256,
-            type: 0xACAC,
-            flags: 0xBDBD,
-            streamId: 4
-        });
-        var expected = new Buffer(12);
-
-        // length should be payloadLength + 12 (frameHeaderLength)
-        // which should be 0x100 + 0x00C
-        expected.writeUInt32BE(0x10c, 0);
-        expected.writeUInt32BE(0xacacbdbd, 4);
-        expected.writeUInt32BE(0x00000004, 8);
-
-        compareFrames(expected, actual);
-    });
     it('encode/decode', function () {
         var seedFrame = {
             length: 0, // 0 since we have no additional frame
@@ -46,7 +28,9 @@ describe('header', function () {
         };
 
         var actualFrame = frame.parseFrame(frame.getFrameHeader(seedFrame));
-        assert.deepEqual(expectedParsedFrame, actualFrame);
+        assert.deepEqual(expectedParsedFrame, _.omit(actualFrame,
+                                                     'dataEncoding',
+                                                     'metadataEncoding'));
     });
 });
 
@@ -72,12 +56,8 @@ describe('setup', function () {
         assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
         assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
                                                    'metadata', 'flags'));
-        assert.deepEqual(actualFrame.data
-                         .toString(actualFrame.setup.dataEncoding),
-                         seedFrame.data);
-        assert.deepEqual(actualFrame.metadata
-                         .toString(actualFrame.setup.metadataEncoding),
-                         seedFrame.metadata);
+        assert.deepEqual(actualFrame.data, seedFrame.data);
+        assert.deepEqual(actualFrame.metadata, seedFrame.metadata);
     });
     it('encode/decode with lease, strict, and data', function () {
         var seedFrame = {
@@ -98,9 +78,7 @@ describe('setup', function () {
         assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
         assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
                                                    'metadata', 'flags'));
-        assert.deepEqual(actualFrame.data
-                         .toString(actualFrame.setup.dataEncoding),
-                         seedFrame.data);
+        assert.deepEqual(actualFrame.data, seedFrame.data);
     });
     it('encode/decode with lease, strict, md', function () {
         var seedFrame = {
@@ -122,9 +100,7 @@ describe('setup', function () {
         assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
         assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
                                                    'metadata', 'flags'));
-        assert.deepEqual(actualFrame.metadata
-                         .toString(actualFrame.setup.metadataEncoding),
-                         seedFrame.metadata);
+        assert.deepEqual(actualFrame.metadata, seedFrame.metadata);
     });
     it('encode/decode with lease, strict', function () {
         var seedFrame = {
@@ -142,8 +118,7 @@ describe('setup', function () {
         assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
         assert.equal(actualFrame.header.flags, seedFrame.flags);
         assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
-        assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
-                                                   'metadata', 'flags'));
+        assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'flags'));
     });
 });
 
@@ -153,7 +128,9 @@ describe('error', function () {
             streamId: getRandomInt(0, Math.pow(2, 32)),
             errorCode: getRandomInt(0, Math.pow(2, 16)),
             data: 'Running over the same old ground',
-            metadata: 'What have we found'
+            metadata: 'What have we found',
+            metadataEncoding: 'utf-8',
+            dataEncoding: 'ascii'
         };
 
         var actualFrame = frame.parseFrame(frame.getErrorFrame(seedFrame));
@@ -170,6 +147,8 @@ describe('error', function () {
 describe('request response', function cb() {
     it('encode/decode', function () {
         var seedFrame = {
+            metadataEncoding: 'utf-8',
+            dataEncoding: 'ascii',
             streamId: getRandomInt(0, Math.pow(2, 32)),
             metadata: 'Big Suge in the lolo, bounce and turn',
             data: 'I hit the studio and drop a jewel, hoping it pay'
@@ -180,8 +159,8 @@ describe('request response', function cb() {
         assert.equal(actualFrame.header.streamId, seedFrame.streamId);
         assert.equal(actualFrame.header.type, CONSTANTS.TYPES.REQUEST_RESPONSE);
         assert.equal(actualFrame.header.flags, CONSTANTS.FLAGS.METADATA);
-        assert.equal(actualFrame.metadata.toString(), seedFrame.metadata);
-        assert.equal(actualFrame.data.toString(), seedFrame.data);
+        assert.equal(actualFrame.metadata, seedFrame.metadata);
+        assert.equal(actualFrame.data, seedFrame.data);
 
     });
 });
@@ -189,6 +168,8 @@ describe('request response', function cb() {
 describe('response', function () {
     it('encode/decode w/ data, metadata, and complete', function () {
         var seedFrame = {
+            metadataEncoding: 'utf-8',
+            dataEncoding: 'ascii',
             streamId: getRandomInt(0, Math.pow(2, 32)),
             flags: CONSTANTS.FLAGS.COMPLETE,
             metadata: 'I bet you got it twisted you don\'t know who to trust',
@@ -201,7 +182,7 @@ describe('response', function () {
         assert.equal(actualFrame.header.type, CONSTANTS.TYPES.RESPONSE);
         assert.equal(actualFrame.header.flags,
                      CONSTANTS.FLAGS.METADATA | CONSTANTS.FLAGS.COMPLETE);
-        assert.equal(actualFrame.metadata.toString(), seedFrame.metadata);
-        assert.equal(actualFrame.data.toString(), seedFrame.data);
+        assert.equal(actualFrame.metadata, seedFrame.metadata);
+        assert.equal(actualFrame.data, seedFrame.data);
     });
 });

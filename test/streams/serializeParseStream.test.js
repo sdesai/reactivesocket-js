@@ -20,10 +20,14 @@ describe('serialize/parse streams', function () {
         serializers: bunyan.stdSerializers
     });
     var S_STREAM = new SerializeStream({
-        log: LOG
+        log: LOG,
+        metadataEncoding: 'utf-8',
+        dataEncoding: 'ascii'
     });
     var P_STREAM = new ParseStream({
-        log: LOG
+        log: LOG,
+        metadataEncoding: 'utf-8',
+        dataEncoding: 'ascii'
     });
     S_STREAM.pipe(P_STREAM);
 
@@ -34,8 +38,6 @@ describe('serialize/parse streams', function () {
             keepalive: getRandomInt(0, Math.pow(2, 32)),
             maxLifetime: getRandomInt(0, Math.pow(2, 32)),
             version: CONSTANTS.VERSION,
-            metadataEncoding: 'utf-8',
-            dataEncoding: 'ascii',
             metadata: 'We\'re just two lost souls swimming in a fish bowl',
             data: 'year after year'
         };
@@ -50,12 +52,8 @@ describe('serialize/parse streams', function () {
             assert.deepEqual(actualFrame.setup, _.omit(seedFrame, 'data',
                                                        'metadata', 'flags',
                                                        'type'));
-            assert.deepEqual(actualFrame.data
-                             .toString(actualFrame.setup.dataEncoding),
-                             seedFrame.data);
-            assert.deepEqual(actualFrame.metadata
-                             .toString(actualFrame.setup.metadataEncoding),
-                             seedFrame.metadata);
+            assert.deepEqual(actualFrame.data, seedFrame.data);
+            assert.deepEqual(actualFrame.metadata, seedFrame.metadata);
             done();
         });
         S_STREAM.write(seedFrame);
