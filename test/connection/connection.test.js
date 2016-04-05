@@ -104,7 +104,17 @@ describe('connection', function () {
         WS_SERVER.close();
     });
 
-    it.only('foo', function () {});
+    it('extra setup frame', function (done) {
+        SERVER_CON.once('setup-error', function (err) {
+            done();
+        });
+
+        CLIENT_CON.setup({
+            metadata: 'You reached for the secret too soon',
+            data: 'you cried for the moon.'
+        }, function () {});
+    });
+
     it('req/res', function (done) {
         SERVER_CON.once('request', function (stream) {
             assert.deepEqual(stream.getRequest(), EXPECTED_REQ);
@@ -134,7 +144,6 @@ describe('connection', function () {
     });
 
     it('req/err', function (done) {
-        this.timeout(560000);
         SERVER_CON.once('request', function (stream) {
             assert.deepEqual(stream.getRequest(), EXPECTED_REQ);
             stream.error(_.cloneDeep(EXPECTED_APPLICATION_ERROR));
