@@ -1,5 +1,8 @@
 # reactivesocket-js
 ReactiveSocket Protocol for Client/Server for JS.
+```bash
+npm install reactivesocket
+```
 
 ## Streams
 The transport for this library is built entirely on top of the Node.js
@@ -12,7 +15,6 @@ this library will work.
 We currently target TCP via the [net](https://nodejs.org/api/net.html) module,
 and WebSockets via the [yws-stream](https://github.com/yunong/ws-stream)
 module. You are of course, free to inject which other transport you'd like.
-
 
 ## Connection Quick Start
 ```javascript
