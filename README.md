@@ -1,13 +1,7 @@
 
 [![NPM Version](https://img.shields.io/npm/v/reactivesocket.svg)](https://npmjs.org/package/reactivesocket)
-<%_ if (data.travis) { _%>
 [![Build Status](https://travis-ci.org/ReactiveSocket/reactivesocket-js.svg?branch=master)](https://travis-ci.org/ReactiveSocket/reactivesocket-js)
-<%_ } _%>
-<%_ if (data.coveralls) { _%>
 [![Coverage Status](https://coveralls.io/repos/github/ReactiveSocket/reactivesocket-js/badge.svg?branch=master)](https://coveralls.io/github/ReactiveSocket/reactivesocket-js?branch=master)
-<%_ } else { _%>
-[![manual coverage](https://img.shields.io/badge/coverage-0%25-green.svg)]()
-<%_ } _%>
 
 # reactivesocket-js
 ReactiveSocket Protocol for Client/Server for JS.
