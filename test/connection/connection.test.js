@@ -7,9 +7,9 @@ var bunyan = require('bunyan');
 var Ws = require('ws');
 var WSStream = require('yws-stream');
 
-var Connection = require('../../lib/connection/connection');
+var reactiveSocket = require('../../lib');
 
-var ERROR_CODES = require('../../lib/protocol/constants').ERROR_CODES;
+var ERROR_CODES = reactiveSocket.ERROR_CODES;
 
 var PORT = process.env.PORT || 1337;
 
@@ -51,7 +51,7 @@ describe('connection', function () {
                     ws: socket
                 });
 
-                SERVER_CON = new Connection({
+                SERVER_CON = reactiveSocket.createConnection({
                     log: LOG,
                     transport: {
                         stream: WS_SERVER_STREAM
@@ -60,7 +60,7 @@ describe('connection', function () {
                 });
 
                 SERVER_CON.on('ready', function () {
-                    CLIENT_CON = new Connection({
+                    CLIENT_CON = reactiveSocket.createConnection({
                         log: LOG,
                         transport: {
                             stream: WS_CLIENT_STREAM
