@@ -1,5 +1,5 @@
 # reactivesocket-js
-ReactiveSocket Protocol for Client/Server for Javascript
+ReactiveSocket Protocol for Client/Server for JS.
 
 ## Streams
 The transport for this library is built entirely on top of the Node.js
