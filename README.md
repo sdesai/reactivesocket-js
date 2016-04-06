@@ -3,7 +3,7 @@ ReactiveSocket Protocol for Client/Server for JS.
 ```bash
 npm install reactivesocket
 ```
-This library only supports the `request/response`, `setup` and `error` 
+This library only supports the `request/response`, `setup` and `error`
 interactions. More interactions are coming soon.
 
 ## Streams
@@ -14,12 +14,12 @@ stream that is a Node.js
 [Duplex](https://nodejs.org/api/stream.html#stream_class_stream_duplex) stream,
 this library will work.
 
-Using streams means that this library natively supports backpressure regardless 
+Using streams means that this library natively supports backpressure regardless
 of the transport implementation.
 
 We currently target TCP via the [net](https://nodejs.org/api/net.html) module,
 and WebSockets via the [yws-stream](https://github.com/yunong/ws-stream)
-module. You are of course, free to inject which other transport you'd like.
+module. You are of course, free to inject other transports.
 
 ## Connection Quick Start
 
@@ -66,7 +66,7 @@ rsConnection.on('ready', function () {
 ```
 
 ## Contributions
-Contributions welcome, please ensure ```make check`` runs clean.
+Contributions welcome, please ensure `make check` runs clean.
 
 ## License
 MIT
