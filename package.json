@@ -1,5 +1,5 @@
 {
-  "name": "reactivesocket-js",
+  "name": "reactivesocket",
   "version": "0.2.0",
   "description": "reactive socket core",
   "main": "lib/index.js",
