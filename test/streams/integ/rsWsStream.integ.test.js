@@ -105,7 +105,7 @@ describe('RS WS Integ Tests', function () {
             data: 'year after year'
         };
 
-        SERVER_P_STREAM.on('readable', function () {
+        SERVER_P_STREAM.once('readable', function () {
             var actualFrame = SERVER_P_STREAM.read();
             assert.isObject(actualFrame.header);
             assert.equal(actualFrame.header.streamId, 0,
@@ -126,7 +126,7 @@ describe('RS WS Integ Tests', function () {
             }
         });
 
-        CLIENT_P_STREAM.on('readable', function () {
+        CLIENT_P_STREAM.once('readable', function () {
             var actualFrame = CLIENT_P_STREAM.read();
             assert.isObject(actualFrame.header);
             assert.equal(actualFrame.header.streamId, 0,

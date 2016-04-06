@@ -158,5 +158,4 @@ describe('connection', function () {
             done();
         });
     });
-
 });
