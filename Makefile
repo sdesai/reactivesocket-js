@@ -10,7 +10,6 @@ MOCHA		= $(NODE_BIN)/mocha
 IMOCHA		= $(NODE_BIN)/_mocha
 ISTANBUL	= $(NODE_BIN)/istanbul
 NPM		:= npm
-PRIMER		= $(NODE_MODULES)/nf-primer/bin/primer.js
 
 #
 # Files
