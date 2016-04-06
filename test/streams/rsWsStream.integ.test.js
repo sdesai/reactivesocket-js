@@ -5,16 +5,16 @@ var assert = require('chai').assert;
 var bunyan = require('bunyan');
 
 var Ws = require('ws');
+var WSStream = require('yws-stream');
 
-var getRandomInt = require('../../common/getRandomInt');
+var getRandomInt = require('../common/getRandomInt');
 
-var ParseStream = require('../../../lib/streams/parseStream.js');
-var SerializeStream = require('../../../lib/streams/serializeStream');
-var WSStream = require('../../../lib/streams/transports/WSStream.js');
+var ParseStream = require('../../lib/streams/parseStream.js');
+var SerializeStream = require('../../lib/streams/serializeStream');
 
-var CONSTANTS = require('../../../lib/protocol/constants');
-var FLAGS = require('../../../lib/protocol/constants').FLAGS;
-var TYPES = require('../../../lib/protocol/constants').TYPES;
+var CONSTANTS = require('../../lib/protocol/constants');
+var FLAGS = require('../../lib/protocol/constants').FLAGS;
+var TYPES = require('../../lib/protocol/constants').TYPES;
 var PORT = process.env.PORT || 1337;
 
 var METADATA_ENCODING = 'binary';

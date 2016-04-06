@@ -5,9 +5,9 @@ var assert = require('chai').assert;
 var bunyan = require('bunyan');
 
 var Ws = require('ws');
+var WSStream = require('yws-stream');
 
 var Connection = require('../../lib/connection/connection');
-var WSStream = require('../../lib/streams/transports/WSStream.js');
 
 var ERROR_CODES = require('../../lib/protocol/constants').ERROR_CODES;
 
