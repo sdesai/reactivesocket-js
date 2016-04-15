@@ -37,35 +37,41 @@ var WSStream = require('yws-stream');
 
 var reactiveSocket = require('reactive-socket');
 
+var websocket = new Ws('ws://localhost:1337'); 
+
 // Create any transport stream that's a Node.js Duplex Stream
 var transportStream = new WSStream({
     log: bunyan.createLogger({name: 'ws-stream'}),
-    ws: new Ws('ws://localhost:1337')
+    ws: websocket
 });
 
-var rsConnection = reactiveSocket.createConnection({
-    log: bunyan.createLogger({name: 'rsConnection'}),
-    transport: {
-        stream: transportStream
-    },
-    type: 'client',
-    metadataEncoding: 'utf8',
-    dataEncoding: 'utf8'
-});
+// Wait for Websocket to establish connection, before we create an RS Connection
+websocket.on('open', function() {
 
-rsConnection.on('ready', function () {
-    // returns a reactive socket stream
-    var stream = rsConnection.request({
-        metadata: 'You reached for the secret too soon, you cried for the moon',
-        data: 'Shine on you crazy diamond.'
+    var rsConnection = reactiveSocket.createConnection({
+        log: bunyan.createLogger({name: 'rsConnection'}),
+        transport: {
+            stream: transportStream
+        },
+        type: 'client',
+        metadataEncoding: 'utf8',
+        dataEncoding: 'utf8'
     });
 
-    stream.on('response', function (res) {
-        console.log('got response', res);
-    });
+    rsConnection.on('ready', function () {
+        // returns a reactive socket stream
+        var stream = rsConnection.request({
+            metadata: 'You reached for the secret too soon, you cried for the moon',
+            data: 'Shine on you crazy diamond.'
+        });
 
-    stream.on('application-error', function (err) {
-        console.error('got error', err);
+        stream.on('response', function (res) {
+            console.log('got response', res);
+        });
+
+        stream.on('application-error', function (err) {
+            console.error('got error', err);
+        });
     });
 });
 ```
