@@ -1,6 +1,6 @@
 {
   "name": "reactivesocket",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "reactive socket core",
   "main": "lib/index.js",
   "scripts": {
