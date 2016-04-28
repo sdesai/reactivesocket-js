@@ -100,6 +100,35 @@ describe('framing stream', function () {
         F_STREAM.write(FIRST_HALF_FRAME);
     });
 
+    it('should frame 2 complete frames', function (done) {
+        var count = 0;
+        P_STREAM.on('data', function (actualFrame) {
+            count++;
+
+            if (count > 2) {
+                throw new Error('should only get 2 frames');
+            }
+            assert.isObject(actualFrame.header);
+            assert.equal(actualFrame.header.streamId, 0,
+                         'setup frame id must be 0');
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.equal(actualFrame.header.flags,
+                         FLAGS.METADATA | FRAME.flags);
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.deepEqual(actualFrame.setup, _.omit(FRAME, 'data',
+                                                       'metadata', 'flags',
+                                                       'type'));
+            assert.deepEqual(actualFrame.data, FRAME.data);
+            assert.deepEqual(actualFrame.metadata, FRAME.metadata);
+
+            if (count === 2) {
+                done();
+            }
+        });
+
+        F_STREAM.write(Buffer.concat([COMP_FRAME, COMP_FRAME]));
+    });
+
     it('should frame complete and incomplete frame', function (done) {
         var count = 0;
         P_STREAM.on('data', function (actualFrame) {
@@ -126,13 +155,13 @@ describe('framing stream', function () {
         F_STREAM.write(Buffer.concat([COMP_FRAME, FIRST_HALF_FRAME]));
     });
 
-    it('should frame two frames from c+i, i', function (done) {
+    it('should frame 2 frames from c+i, i', function (done) {
         var count = 0;
         P_STREAM.on('data', function (actualFrame) {
             count++;
 
             if (count > 2) {
-                throw new Error('should only get two frames');
+                throw new Error('should only get 2 frames');
             }
             assert.isObject(actualFrame.header);
             assert.equal(actualFrame.header.streamId, 0,
@@ -156,13 +185,13 @@ describe('framing stream', function () {
         F_STREAM.write(SECOND_HALF_FRAME);
     });
 
-    it('should frame two frames from c+i, i, i', function (done) {
+    it('should frame 2 frames from c+i, i, i', function (done) {
         var count = 0;
         P_STREAM.on('data', function (actualFrame) {
             count++;
 
             if (count > 2) {
-                throw new Error('should only get two frames');
+                throw new Error('should only get 2 frames');
             }
             assert.isObject(actualFrame.header);
             assert.equal(actualFrame.header.streamId, 0,
@@ -188,13 +217,13 @@ describe('framing stream', function () {
         F_STREAM.write(SECOND_HALF_FRAME.slice(SECOND_HALF_FRAME.length / 2));
     });
 
-    it('should frame three frames from c+i, i, i+c', function (done) {
+    it('should frame 3 frames from c+i, i, i+c', function (done) {
         var count = 0;
         P_STREAM.on('data', function (actualFrame) {
             count++;
 
             if (count > 3) {
-                throw new Error('should only get two frames');
+                throw new Error('should only get 3 frames');
             }
             assert.isObject(actualFrame.header);
             assert.equal(actualFrame.header.streamId, 0,
@@ -217,8 +246,120 @@ describe('framing stream', function () {
         F_STREAM.write(Buffer.concat([COMP_FRAME, FIRST_HALF_FRAME]));
         F_STREAM.write(SECOND_HALF_FRAME.slice(0,
                                                SECOND_HALF_FRAME.length / 2));
-        F_STREAM.write(Buffer.concat(
-            [SECOND_HALF_FRAME.slice(SECOND_HALF_FRAME.length / 2),
-                COMP_FRAME]));
+        F_STREAM.write(Buffer.concat([
+            SECOND_HALF_FRAME.slice(SECOND_HALF_FRAME.length / 2),
+            COMP_FRAME
+        ]));
+    });
+
+    it('should frame 4 frames from c+i, i, i+c+i, i', function (done) {
+        var count = 0;
+        P_STREAM.on('data', function (actualFrame) {
+            count++;
+
+            if (count > 4) {
+                throw new Error('should only get 4 frames');
+            }
+            assert.isObject(actualFrame.header);
+            assert.equal(actualFrame.header.streamId, 0,
+                         'setup frame id must be 0');
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.equal(actualFrame.header.flags,
+                         FLAGS.METADATA | FRAME.flags);
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.deepEqual(actualFrame.setup, _.omit(FRAME, 'data',
+                                                       'metadata', 'flags',
+                                                       'type'));
+            assert.deepEqual(actualFrame.data, FRAME.data);
+            assert.deepEqual(actualFrame.metadata, FRAME.metadata);
+
+            if (count === 4) {
+                done();
+            }
+        });
+
+        // c+i
+        F_STREAM.write(Buffer.concat([COMP_FRAME, FIRST_HALF_FRAME]));
+        // i
+        F_STREAM.write(SECOND_HALF_FRAME.slice(
+            0, SECOND_HALF_FRAME.length / 2));
+        // i+c+i
+        F_STREAM.write(Buffer.concat([
+            SECOND_HALF_FRAME.slice(SECOND_HALF_FRAME.length / 2),
+            COMP_FRAME,
+            FIRST_HALF_FRAME
+        ]));
+
+        // i
+        F_STREAM.write(SECOND_HALF_FRAME);
+    });
+
+    it('should frame 4 frames from c+i, i+c+c', function (done) {
+        var count = 0;
+        P_STREAM.on('data', function (actualFrame) {
+            count++;
+
+            if (count > 4) {
+                throw new Error('should only get 4 frames');
+            }
+            assert.isObject(actualFrame.header);
+            assert.equal(actualFrame.header.streamId, 0,
+                         'setup frame id must be 0');
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.equal(actualFrame.header.flags,
+                         FLAGS.METADATA | FRAME.flags);
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.deepEqual(actualFrame.setup, _.omit(FRAME, 'data',
+                                                       'metadata', 'flags',
+                                                       'type'));
+            assert.deepEqual(actualFrame.data, FRAME.data);
+            assert.deepEqual(actualFrame.metadata, FRAME.metadata);
+
+            if (count === 4) {
+                done();
+            }
+        });
+
+        F_STREAM.write(Buffer.concat([COMP_FRAME, FIRST_HALF_FRAME]));
+        F_STREAM.write(Buffer.concat([
+            SECOND_HALF_FRAME,
+            COMP_FRAME,
+            COMP_FRAME
+        ]));
+    });
+
+    it('should frame 4 frames from c+i, i+c+c+i', function (done) {
+        var count = 0;
+        P_STREAM.on('data', function (actualFrame) {
+            count++;
+
+            if (count > 4) {
+                throw new Error('should only get 4 frames');
+            }
+            assert.isObject(actualFrame.header);
+            assert.equal(actualFrame.header.streamId, 0,
+                         'setup frame id must be 0');
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.equal(actualFrame.header.flags,
+                         FLAGS.METADATA | FRAME.flags);
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.deepEqual(actualFrame.setup, _.omit(FRAME, 'data',
+                                                       'metadata', 'flags',
+                                                       'type'));
+            assert.deepEqual(actualFrame.data, FRAME.data);
+            assert.deepEqual(actualFrame.metadata, FRAME.metadata);
+
+            if (count === 4) {
+                done();
+            }
+        });
+
+        F_STREAM.write(Buffer.concat([COMP_FRAME, FIRST_HALF_FRAME]));
+        F_STREAM.write(Buffer.concat([
+            SECOND_HALF_FRAME,
+            COMP_FRAME,
+            COMP_FRAME,
+            FIRST_HALF_FRAME
+        ]));
     });
 });
