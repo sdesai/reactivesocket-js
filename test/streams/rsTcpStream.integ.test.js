@@ -100,8 +100,22 @@ describe('RS TCP Integ Tests', function () {
     });
 
     after(function (done) {
+        var count = 0;
+        TCP_CLIENT_STREAM.once('close', function () {
+            count++;
+
+            if (count === 2) {
+                done();
+            }
+        });
         TCP_SERVER_STREAM.on('end', function () {
-            done();
+            TCP_SERVER.close(function () {
+                count++;
+
+                if (count === 2) {
+                    done();
+                }
+            });
         });
         TCP_SERVER_STREAM.end();
         TCP_CLIENT_STREAM.end();
@@ -113,7 +127,6 @@ describe('RS TCP Integ Tests', function () {
     });
 
     it('ws client/server serialize/parse frames', function (done) {
-        this.timeout(50000);
         var serverFrameSpy = sinon.spy(SERVER_F_STREAM, '_transform');
         var clientFrameSpy = sinon.spy(CLIENT_F_STREAM, '_transform');
         var isDone = 0;
