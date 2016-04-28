@@ -35,9 +35,9 @@ var bunyan = require('bunyan');
 var Ws = require('ws');
 var WSStream = require('yws-stream');
 
-var reactiveSocket = require('reactive-socket');
+var reactiveSocket = require('reactivesocket');
 
-var websocket = new Ws('ws://localhost:1337'); 
+var websocket = new Ws('ws://localhost:1337');
 
 // Create any transport stream that's a Node.js Duplex Stream
 var transportStream = new WSStream({
