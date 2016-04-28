@@ -27,15 +27,52 @@ and WebSockets via the [yws-stream](https://github.com/yunong/ws-stream)
 module. You are of course, free to inject other transports.
 
 ## Connection Quick Start
+### TCP
+```javascript
+var net = require('net');
+
+var bunyan = require('bunyan');
+var reactiveSocket = require('reactivesocket');
 
 
+// Create any transport stream that's a Node.js Duplex Stream.
+var transportStream = net.connect(1337, 'localhost', function (err) {
+    var rsConnection = reactiveSocket.createConnection({
+        log: bunyan.createLogger({name: 'rsConnection'}),
+        transport: {
+            stream: transportStream,
+            framed: true // TCP requires explicit framing
+        },
+        type: 'client',
+        metadataEncoding: 'utf8',
+        dataEncoding: 'utf8'
+    });
+
+    rsConnection.on('ready', function () {
+        // returns a reactive socket stream
+        var stream = rsConnection.request({
+            metadata: 'You reached for the secret too soon, you cried for the moon',
+            data: 'Shine on you crazy diamond.'
+        });
+
+        stream.on('response', function (res) {
+            console.log('got response', res);
+        });
+
+        stream.on('application-error', function (err) {
+            console.error('got error', err);
+        });
+    });
+});
+```
+### WebSockets
 ```javascript
 var bunyan = require('bunyan');
+var reactiveSocket = require('reactivesocket');
 
 var Ws = require('ws');
 var WSStream = require('yws-stream');
 
-var reactiveSocket = require('reactivesocket');
 
 var websocket = new Ws('ws://localhost:1337');
 

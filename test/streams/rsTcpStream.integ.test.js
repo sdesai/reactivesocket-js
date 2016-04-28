@@ -126,9 +126,12 @@ describe('RS TCP Integ Tests', function () {
         CLIENT_P_STREAM.removeAllListeners('readable');
     });
 
-    it('ws client/server serialize/parse frames', function (done) {
+    it('tcp client/server serialize/parse frames', function (done) {
+        // check that we are actually framing. _transform should be called more
+        // than twice since we send at least 2 frames
         var serverFrameSpy = sinon.spy(SERVER_F_STREAM, '_transform');
         var clientFrameSpy = sinon.spy(CLIENT_F_STREAM, '_transform');
+
         var isDone = 0;
         var seedFrame = {
             type: TYPES.SETUP,
