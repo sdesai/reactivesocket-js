@@ -41,6 +41,7 @@
     "lodash": "^4.6.1",
     "minimist": "^1.2.0",
     "mocha": "^2.3.0",
+    "simple-statistics": "^2.0.0-beta1",
     "sinon": "^1.17.3",
     "ws": "^0.8.0"
   }
