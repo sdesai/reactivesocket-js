@@ -1,10 +1,11 @@
 'use strict'
 
 var fs = require('fs');
-var net = require('net');
 
-var bunyan = require('bunyan');
 var ss = require('simple-statistics');
+
+var Ws = require('ws');
+var WSStream = require('yws-stream');
 
 var reactiveSocket = require('../lib');
 
@@ -20,15 +21,6 @@ var HOST = process.env.HOST || 'localhost';
 var HAMLET = fs.readFileSync('./test/etc/hamlet.txt', 'utf8');
 var JULIUS_CAESAR = fs.readFileSync('./test/etc/julius_caesar.txt', 'utf8');
 
-var TCP_CLIENT_CON;
-var TCP_CLIENT_STREAM;
-
-var LOG = bunyan.createLogger({
-    name: 'benchmark',
-    level: process.env.LOG_LEVEL || bunyan.INFO,
-    serializers: bunyan.stdSerializers
-});
-
 
 var REQ = {
     metadata: 'hi',
@@ -41,26 +33,30 @@ var REQ = {
 
 var TIMERS = [];
 
-TCP_CLIENT_STREAM = net.connect(PORT, HOST, function (e) {
-    TCP_CLIENT_CON = reactiveSocket.createConnection({
-        log: LOG,
+var websocket = new Ws('ws://' + HOST + ':' + PORT);
+
+// Create any transport stream that's a Node.js Duplex Stream
+var transportStream = new WSStream({
+    ws: websocket
+});
+
+// Wait for Websocket to establish connection, before we create an RS Connection
+websocket.on('open', function() {
+
+    var rsConnection = reactiveSocket.createConnection({
         transport: {
-            stream: TCP_CLIENT_STREAM,
-            framed: true
+            stream: transportStream
         },
         type: 'client',
-        metadataEncoding: 'utf-8',
-        dataEncoding: 'utf-8'
+        metadataEncoding: 'utf8',
+        dataEncoding: 'utf8'
     });
 
-    TCP_CLIENT_CON.on('ready', function () {
-        setInterval(function () {
-
-        }, 1000);
+    rsConnection.on('ready', function () {
         for (var i = 0; i < ITERATIONS; i++) {
             setImmediate(function () {
                 var start = process.hrtime();
-                var stream = TCP_CLIENT_CON.request(REQ);
+                var stream = rsConnection.request(REQ);
                 stream.on('response', function (res) {
                     var elapsed = process.hrtime(start);
                     var elapsedNs = elapsed[0] * 1e9 + elapsed[1];
