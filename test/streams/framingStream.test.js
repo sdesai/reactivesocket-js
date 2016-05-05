@@ -185,6 +185,39 @@ describe('framing stream', function () {
         F_STREAM.write(SECOND_HALF_FRAME);
     });
 
+    it('should frame 2 frames from c+i, i, spanning length header',
+       function (done) {
+        var count = 0;
+        P_STREAM.on('data', function (actualFrame) {
+            count++;
+
+            if (count > 2) {
+                throw new Error('should only get 2 frames');
+            }
+            assert.isObject(actualFrame.header);
+            assert.equal(actualFrame.header.streamId, 0,
+                         'setup frame id must be 0');
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.equal(actualFrame.header.flags,
+                         FLAGS.METADATA | FRAME.flags);
+            assert.equal(actualFrame.header.type, CONSTANTS.TYPES.SETUP);
+            assert.deepEqual(actualFrame.setup, _.omit(FRAME, 'data',
+                                                       'metadata', 'flags',
+                                                       'type'));
+            assert.deepEqual(actualFrame.data, FRAME.data);
+            assert.deepEqual(actualFrame.metadata, FRAME.metadata);
+
+            if (count === 2) {
+                done();
+            }
+        });
+        var first_span = COMP_FRAME.slice(0, 3);
+        var second_span = COMP_FRAME.slice(3);
+
+        F_STREAM.write(Buffer.concat([COMP_FRAME, first_span]));
+        F_STREAM.write(second_span);
+    });
+
     it('should frame 2 frames from c+i, i, i', function (done) {
         var count = 0;
         P_STREAM.on('data', function (actualFrame) {
