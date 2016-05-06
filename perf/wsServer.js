@@ -18,25 +18,30 @@ var HOST = process.env.HOST || 'localhost';
 var HAMLET = fs.readFileSync('./test/etc/hamlet.txt', 'utf8');
 var JULIUS_CAESAR = fs.readFileSync('./test/etc/julius_caesar.txt', 'utf8');
 
-var RES = {
-    metadata: JULIUS_CAESAR,
-    data: HAMLET
-};
-
 //var RES = {
-    //metadata: 'hello',
-    //data: 'world'
+    //metadata: JULIUS_CAESAR,
+    //data: HAMLET
 //};
+
+var RES = {
+    metadata: 'hello',
+    data: 'world'
+};
 
 var COUNT = 0;
 var WS_SERVER = new Ws.Server({port: PORT, host: HOST});
 
 WS_SERVER.on('listening', function () {
     WS_SERVER.on('connection', function (socket) {
+        socket.on('error', function (err) {
+            console.error('ws con error', err);
+        });
         var RS_SERVER_CON = reactiveSocket.createConnection({
             transport: {
                 stream: new WSStream({
                     ws: socket
+                }).on('error', function (err) {
+                    console.log('ws stream error', err);
                 })
             },
             type: 'server'

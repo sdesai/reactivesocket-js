@@ -28,7 +28,10 @@ var RES = {
 
 var COUNT = 0;
 var TCP_SERVER = net.createServer(function (con) {
-    var TCP_SERVER_CON = reactiveSocket.createConnection({
+    con.on('error', function (err) {
+        console.error('tcp con error', err);
+    });
+    var RS_SERVER_CON = reactiveSocket.createConnection({
         transport: {
             stream: con,
             framed: true
@@ -36,7 +39,7 @@ var TCP_SERVER = net.createServer(function (con) {
         type: 'server'
     });
 
-    TCP_SERVER_CON.on('request', function (stream) {
+    RS_SERVER_CON.on('request', function (stream) {
         COUNT++;
         setImmediate(function () {
             stream.response({

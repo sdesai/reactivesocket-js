@@ -33,6 +33,7 @@
     "lodash": "^4.6.1"
   },
   "devDependencies": {
+    "async": "^2.0.0-rc.4",
     "chai": "^3.4.0",
     "coveralls": "^2.11.6",
     "eslint": "^1.6.0",
