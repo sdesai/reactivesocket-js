@@ -28,9 +28,10 @@
   "dependencies": {
     "assert-plus": "^1.0.0",
     "bunyan": "^1.5.1",
+    "dashdash": "^1.13.1",
+    "lodash": "^4.6.1",
     "vasync": "^1.6.4",
-    "yws-stream": "^1.0.0",
-    "lodash": "^4.6.1"
+    "yws-stream": "^1.0.0"
   },
   "devDependencies": {
     "async": "^2.0.0-rc.4",
