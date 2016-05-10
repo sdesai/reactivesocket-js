@@ -8,10 +8,17 @@ var _  = require('lodash');
 var async = require('async');
 var dashdash = require('dashdash');
 var ss = require('simple-statistics');
+var vasync = require('vasync');
+
+var Ws = require('ws');
+var WSStream = require('yws-stream');
 
 var reactiveSocket = require('../lib');
 
-var options = [{
+var TCP_REGEX = /tcp:\/\/.+:[0-9]+\/*.*/;
+var WS_REGEX = /wss?:\/\/.+:[0-9]+\/*.*/;
+
+var OPTIONS = [{
     names: ['help', 'h'],
     type: 'bool',
     help: 'Print this help and exit.'
@@ -37,95 +44,132 @@ var options = [{
     help: 'Metadata to include, defaults to null'
 }];
 
-var parser = dashdash.createParser({options: options});
-var opts;
+var PARSER = dashdash.createParser({options: OPTIONS});
+var HELP = PARSER.help({includeEnv: true}).trimRight();
+var OPTS;
 
 try {
-    opts = parser.parse(process.argv);
+    OPTS = PARSER.parse(process.argv);
 } catch (e) {
     console.error('foo: error: %s', e.message);
     process.exit(1);
 }
 
-if (opts.help) {
-    var help = parser.help({includeEnv: true}).trimRight();
-    console.log('usage: rsBench [OPTIONS] tcp://localhost:1337\n'
+if (OPTS.help) {
+    HELP = PARSER.help({includeEnv: true}).trimRight();
+    console.log('usage: rsBench [OPTIONS] tcp|ws://localhost:1337\n'
                 + 'options:\n'
-                + help);
+                + HELP);
     process.exit(0);
 }
 
-var iterations = opts.number || 1000;
-var concurrency = opts.concurrency || 10;
-var endpoint = url.parse(opts._args[0]);
-var size = opts.size || 8;
+var RAW_URL = OPTS._args[0];
+
+var ITERATIONS = OPTS.number || 1000;
+var CONCURRENCY = OPTS.concurrency || 10;
+var SIZE = OPTS.size || 8;
+var ENDPOINT = url.parse(RAW_URL);
 
 // we need to send a large enough frame to ensure we exceed the default TCP
 // loopback MTU of 16-64 kbytes. This is to test that framing actually works.
 // Hence we read in some select works of the Bard.
-var data = fs.readFileSync('./test/etc/hamlet.txt', 'utf8');
+var DATA = fs.readFileSync('./test/etc/hamlet.txt', 'utf8');
 
-var quotient = size / data.length;
-
-for (var i = 0; i < quotient; i++) {
-    data += data;
+for (var i = 0; i < SIZE / DATA.length ; i++) {
+    DATA += DATA;
 }
 
-data = data.substr(0, size);
+DATA = DATA.substr(0, SIZE);
 
 var RS_CLIENT_CON;
-var TCP_CLIENT_STREAM;
+var CLIENT_STREAM;
 
 var REQ = {
-    metadata: opts.metadata,
-    data: data
+    metadata: OPTS.metadata,
+    data: DATA
 };
 
-var TIMERS = new Array(iterations);
+var TIMERS = new Array(ITERATIONS);
 
 var COUNT = 0;
 
-var startTime = process.hrtime();
-TCP_CLIENT_STREAM = net.connect(endpoint.port, endpoint.hostname, function (e) {
-    RS_CLIENT_CON = reactiveSocket.createConnection({
-        transport: {
-            stream: TCP_CLIENT_STREAM,
-            framed: true
-        },
-        type: 'client',
-        metadataEncoding: 'utf-8',
-        dataEncoding: 'utf-8'
-    });
+var START_TIME;
+var HAS_PRINTED = false;
 
-    RS_CLIENT_CON.on('ready', function () {
-        async.eachLimit(TIMERS, concurrency, function (timer, cb) {
-            var start = process.hrtime();
-            var stream = RS_CLIENT_CON.request(REQ);
-            stream.on('response', function (res) {
-                var elapsed = process.hrtime(start);
-                var elapsedNs = elapsed[0] * 1e9 + elapsed[1];
-                TIMERS[COUNT] = elapsedNs;
-                COUNT++;
-                cb();
+vasync.pipeline({funcs: [
+    function setupTransportStream(ctx, cb) {
+        if (TCP_REGEX.test(RAW_URL)) {
+            CLIENT_STREAM = net.connect(ENDPOINT.port, ENDPOINT.hostname,
+                                        function (e) {
+                return cb(e);
+            });
+        } else if (WS_REGEX.test(RAW_URL)) {
+            var ws = new Ws(RAW_URL);
+            CLIENT_STREAM = new WSStream({
+                ws: ws
+            });
 
-                if (COUNT === iterations) {
-                    process.exit();
-                }
+            ws.on('open', function () {
+                return cb();
+            });
+
+        } else {
+            HELP = PARSER.help({includeEnv: true}).trimRight();
+            console.log('usage: rsBench [OPTIONS] tcp|ws://localhost:1337\n'
+                        + 'options:\n'
+                        + HELP);
+            process.exit(1);
+        }
+    },
+    function setupConnection(ctx, cb) {
+        RS_CLIENT_CON = reactiveSocket.createConnection({
+            transport: {
+                stream: CLIENT_STREAM,
+                framed: true
+            },
+            type: 'client',
+            metadataEncoding: 'utf-8',
+            dataEncoding: 'utf-8'
+        });
+
+        RS_CLIENT_CON.on('ready', function () {
+            START_TIME = process.hrtime();
+            async.eachLimit(TIMERS, CONCURRENCY, function (timer, _cb) {
+                var start = process.hrtime();
+                var stream = RS_CLIENT_CON.request(REQ);
+
+                stream.on('response', function (res) {
+                    var elapsed = process.hrtime(start);
+                    var elapsedNs = elapsed[0] * 1e9 + elapsed[1];
+                    TIMERS[COUNT] = elapsedNs;
+                    COUNT++;
+                    _cb();
+
+                    if (COUNT === ITERATIONS) {
+                        return cb();
+                    }
+                });
             });
         });
-    });
+    }
+], arg: {}}, function (err, cb) {
+    if (err) {
+        throw err;
+    }
+
+    process.exit();
 });
 
-var hasPrinted = false;
 function printMetrics() {
     var timers = _.compact(TIMERS);
-    var elapsed = process.hrtime(startTime);
+    var elapsed = process.hrtime(START_TIME);
     var elapsedNs = elapsed[0] * 1e9 + elapsed[1];
-    if (hasPrinted) {
+
+    if (HAS_PRINTED) {
         return;
     }
-    hasPrinted = true;
-    console.log('elapsed time', elapsedNs);
+    HAS_PRINTED = true;
+    console.log('elapsed time', elapsedNs / 1e9);
     console.log('total reqs', timers.length);
     console.log('rps', timers.length / (elapsedNs / 1e9));
     console.log('median', ss.median(timers) / 1e9);
