@@ -44,6 +44,6 @@ setInterval(function () {
     if (COUNT === 0) {
         return;
     }
-    console.log('%s RPS', COUNT);
+    console.error('%s RPS', COUNT);
     COUNT = 0;
 }, 1000);

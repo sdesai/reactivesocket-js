@@ -191,7 +191,7 @@ function printMetrics() {
         '99.999% (ms)': ss.quantile(timers, 0.99999) / 1e6
     };
 
-    console.log(results);
+    console.error(results);
 }
 
 function help(statusCode) {

@@ -22,7 +22,7 @@ WS_SERVER.on('listening', function () {
                 stream: new WSStream({
                     ws: socket
                 }).on('error', function (err) {
-                    console.log('ws stream error', err);
+                    console.error('ws stream error', err);
                 })
             },
             type: 'server'
@@ -43,6 +43,6 @@ setInterval(function () {
     if (COUNT === 0) {
         return;
     }
-    console.log('%s RPS', COUNT);
+    console.error('%s RPS', COUNT);
     COUNT = 0;
 }, 1000);

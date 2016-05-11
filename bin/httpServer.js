@@ -13,13 +13,13 @@ var server = http.createServer(function (req, res) {
 });
 
 server.listen(PORT, function () {
-    console.log('listening');
+    console.error('listening');
 });
 
 setInterval(function () {
     if (COUNT === 0) {
         return;
     }
-    console.log('%s RPS', COUNT);
+    console.error('%s RPS', COUNT);
     COUNT = 0;
 }, 1000);
