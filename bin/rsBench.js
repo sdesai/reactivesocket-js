@@ -58,6 +58,7 @@ if (OPTS.help) {
 
 
 var RAW_URL = OPTS._args[0];
+
 if (!RAW_URL) {
     help(1);
 }
