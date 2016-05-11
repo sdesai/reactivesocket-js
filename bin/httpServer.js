@@ -16,7 +16,7 @@ server.listen(PORT, function () {
     console.log('listening');
 });
 
-setInterval(function() {
+setInterval(function () {
     if (COUNT === 0) {
         return;
     }

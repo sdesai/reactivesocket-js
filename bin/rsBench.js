@@ -32,10 +32,6 @@ var OPTIONS = [{
     type: 'number',
     help: 'Number of multiple requests to make at a time'
 }, {
-    names: ['timelimit', 't'],
-    type: 'number',
-    help: 'Seconds to max. to spend on benchmarking'
-}, {
     names: ['size', 's'],
     type: 'number',
     help: 'Size of payload in bytes, defaults to 8'
@@ -57,23 +53,15 @@ try {
 }
 
 if (OPTS.help) {
-    HELP = PARSER.help({includeEnv: true}).trimRight();
-    console.log('usage: rsBench [OPTIONS] tcp|ws://localhost:1337\n'
-                + 'options:\n'
-                + HELP);
-    process.exit(0);
+    help(0);
 }
 
 var RAW_URL = OPTS._args[0];
-
+var ENDPOINT = url.parse(RAW_URL);
 var ITERATIONS = OPTS.number || 1000;
 var CONCURRENCY = OPTS.concurrency || 10;
 var SIZE = OPTS.size || 8;
-var ENDPOINT = url.parse(RAW_URL);
 
-// we need to send a large enough frame to ensure we exceed the default TCP
-// loopback MTU of 16-64 kbytes. This is to test that framing actually works.
-// Hence we read in some select works of the Bard.
 var DATA = fs.readFileSync('./test/etc/hamlet.txt', 'utf8');
 
 for (var i = 0; i < SIZE / DATA.length ; i++) {
@@ -81,9 +69,6 @@ for (var i = 0; i < SIZE / DATA.length ; i++) {
 }
 
 DATA = DATA.substr(0, SIZE);
-
-var RS_CLIENT_CON;
-var CLIENT_STREAM;
 
 var REQ = {
     metadata: OPTS.metadata,
@@ -96,6 +81,9 @@ var COUNT = 0;
 
 var START_TIME;
 var HAS_PRINTED = false;
+
+var RS_CLIENT_CON;
+var CLIENT_STREAM;
 
 vasync.pipeline({funcs: [
     function setupTransportStream(ctx, cb) {
@@ -115,11 +103,7 @@ vasync.pipeline({funcs: [
             });
 
         } else {
-            HELP = PARSER.help({includeEnv: true}).trimRight();
-            console.log('usage: rsBench [OPTIONS] tcp|ws://localhost:1337\n'
-                        + 'options:\n'
-                        + HELP);
-            process.exit(1);
+            help(1);
         }
     },
     function setupConnection(ctx, cb) {
@@ -161,6 +145,19 @@ vasync.pipeline({funcs: [
     process.exit();
 });
 
+process.on('exit', function () {
+    printMetrics();
+});
+
+process.on('SIGINT', function () {
+    printMetrics();
+    process.exit();
+});
+
+
+/// Private funcs
+
+
 function printMetrics() {
     var timers = _.compact(TIMERS);
     var elapsed = process.hrtime(START_TIME);
@@ -170,31 +167,37 @@ function printMetrics() {
         return;
     }
     HAS_PRINTED = true;
-    console.log('elapsed time', elapsedNs / 1e9);
-    console.log('total reqs', timers.length);
-    console.log('rps', timers.length / (elapsedNs / 1e9));
-    console.log('median', ss.median(timers) / 1e9);
-    console.log('mean', ss.mean(timers) / 1e9);
-    console.log('0.1%', ss.quantile(timers, 0.001) / 1e9);
-    console.log('1%', ss.quantile(timers, 0.01) / 1e9);
-    console.log('5%', ss.quantile(timers, 0.05) / 1e9);
-    console.log('10%', ss.quantile(timers, 0.1) / 1e9);
-    console.log('20%', ss.quantile(timers, 0.2) / 1e9);
-    console.log('30%', ss.quantile(timers, 0.3) / 1e9);
-    console.log('40%', ss.quantile(timers, 0.4) / 1e9);
-    console.log('50%', ss.quantile(timers, 0.5) / 1e9);
-    console.log('60%', ss.quantile(timers, 0.6) / 1e9);
-    console.log('70%', ss.quantile(timers, 0.7) / 1e9);
-    console.log('80%', ss.quantile(timers, 0.8) / 1e9);
-    console.log('90%', ss.quantile(timers, 0.9) / 1e9);
-    console.log('99%', ss.quantile(timers, 0.99) / 1e9);
+    var results = {
+        'elapsed time (s)': elapsedNs / 1e9,
+        'total reqs': timers.length,
+        RPS: timers.length / (elapsedNs / 1e9),
+        'median (ms)': ss.median(timers) / 1e6,
+        'mean (ms)': ss.mean(timers) / 1e6,
+        '0.1% (ms)': ss.quantile(timers, 0.001) / 1e6,
+        '1% (ms)': ss.quantile(timers, 0.01) / 1e6,
+        '5% (ms)': ss.quantile(timers, 0.05) / 1e6,
+        '10% (ms)': ss.quantile(timers, 0.1) / 1e6,
+        '20% (ms)': ss.quantile(timers, 0.2) / 1e6,
+        '30% (ms)': ss.quantile(timers, 0.3) / 1e6,
+        '40% (ms)': ss.quantile(timers, 0.4) / 1e6,
+        '50% (ms)': ss.quantile(timers, 0.5) / 1e6,
+        '60% (ms)': ss.quantile(timers, 0.6) / 1e6,
+        '70% (ms)': ss.quantile(timers, 0.7) / 1e6,
+        '80% (ms)': ss.quantile(timers, 0.8) / 1e6,
+        '90% (ms)': ss.quantile(timers, 0.9) / 1e6,
+        '99% (ms)': ss.quantile(timers, 0.99) / 1e6,
+        '99.9% (ms)': ss.quantile(timers, 0.999) / 1e6,
+        '99.99% (ms)': ss.quantile(timers, 0.9999) / 1e6,
+        '99.999% (ms)': ss.quantile(timers, 0.99999) / 1e6
+    };
+
+    console.log(results);
 }
 
-process.on('exit', function () {
-    printMetrics();
-});
-
-process.on('SIGINT', function () {
-    printMetrics();
-    process.exit();
-});
+function help(statusCode) {
+    HELP = PARSER.help({includeEnv: true}).trimRight();
+    console.log('usage: rb [OPTIONS] tcp|ws://localhost:1337\n'
+                + 'options:\n'
+                + HELP);
+    process.exit(statusCode);
+}

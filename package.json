@@ -1,10 +1,16 @@
 {
   "name": "reactivesocket",
   "version": "1.1.1",
-  "description": "reactive socket core",
+  "description": "reactive socket js core",
+  "bin" : {
+      "rb": "./bin/rsBench.js",
+      "rs": "./bin/rs.js",
+      "rs-tcp-server": "./bin/tcpServer.js",
+      "rs-ws-server": "./bin/wsServer.js"
+  },
   "main": "lib/index.js",
   "scripts": {
-    "all": "gulp all"
+    "all": "make"
   },
   "repository": {
     "type": "git",
@@ -17,7 +23,9 @@
     "reactive",
     "socket",
     "JS",
-    "core"
+    "core",
+    "reactive-socket",
+    "reactivesocket"
   ],
   "author": "Yunong J Xiao",
   "license": "MIT",
@@ -40,7 +48,6 @@
     "eslint": "^1.6.0",
     "istanbul": "^0.4.2",
     "jscs": "^2.3.0",
-    "lodash": "^4.6.1",
     "minimist": "^1.2.0",
     "mocha": "^2.3.0",
     "simple-statistics": "^2.0.0-beta1",

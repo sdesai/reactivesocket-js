@@ -3,8 +3,6 @@
 
 var net = require('net');
 
-var ss = require('simple-statistics');
-
 var reactiveSocket = require('../lib');
 
 var PORT = process.env.PORT || 1337;
@@ -42,7 +40,7 @@ TCP_SERVER.listen({
     }
 });
 
-setInterval(function() {
+setInterval(function () {
     if (COUNT === 0) {
         return;
     }

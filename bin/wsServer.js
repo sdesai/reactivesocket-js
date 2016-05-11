@@ -1,8 +1,6 @@
 #!/bin/env node
 'use strict';
 
-var ss = require('simple-statistics');
-
 var Ws = require('ws');
 var WSStream = require('yws-stream');
 
@@ -41,7 +39,7 @@ WS_SERVER.on('listening', function () {
     });
 });
 
-setInterval(function() {
+setInterval(function () {
     if (COUNT === 0) {
         return;
     }

@@ -16,10 +16,11 @@ NPM		:= npm
 #
 #JS_FILES	:= $(wildcard $(TOP)/*.js $(TOP)/lib/**/*.js $(TOP)/test/**/*.js)
 LIB_DIR		:= lib
+BIN_DIR		:= bin
 TEST_DIR	:= test
 TEST_FILES	:= $(TEST_DIR)/connection/* $(TEST_DIR)/frame/*\
 	    $(TEST_DIR)/streams/*
-JS_FILES	:= $(shell find $(LIB_DIR) $(TEST_DIR) -name '*.js')
+JS_FILES	:= $(shell find $(LIB_DIR) $(BIN_DIR) $(TEST_DIR) -name '*.js')
 TEST_FILES	:= $(shell find $(TEST_DIR) -name '*.test.js')
 PRIMER_SCRIPTS	:= $(TOP)/edge/**/*.groovy
 SHRINKWRAP	:= npm-shrinkwrap.json
