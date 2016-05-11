@@ -1,4 +1,4 @@
-#!/bin/env node
+#!/usr/bin/env node
 'use strict';
 
 var net = require('net');
@@ -164,6 +164,6 @@ function help(statusCode) {
         + 'options:\n'
         + HELP + '\n'
         + 'you can alternatively pipe in data on stdin: \n'
-        + 'e.g. echo \'foobar\' | xargs rs.js -o req tcp://localhost:1337');
+        + 'e.g. echo \'foobar\' | xargs rs -o req tcp://localhost:1337');
     process.exit(statusCode);
 }
