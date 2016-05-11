@@ -17,7 +17,8 @@
     "url": "git+https://github.com/ReactiveSocket/reactivesocket-js.git"
   },
   "files": [
-    "lib"
+    "lib",
+    "bin"
   ],
   "keywords": [
     "reactive",
