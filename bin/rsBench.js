@@ -56,7 +56,11 @@ if (OPTS.help) {
     help(0);
 }
 
+
 var RAW_URL = OPTS._args[0];
+if (!RAW_URL) {
+    help(1);
+}
 var ENDPOINT = url.parse(RAW_URL);
 var ITERATIONS = OPTS.number || 1000;
 var CONCURRENCY = OPTS.concurrency || 10;
