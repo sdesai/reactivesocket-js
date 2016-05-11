@@ -56,7 +56,7 @@ var transportStream = net.connect(1337, 'localhost', function (err) {
         });
 
         stream.on('response', function (res) {
-            console.log('got response', res);
+            console.log('got response', res.getResponse());
         });
 
         stream.on('application-error', function (err) {
@@ -103,7 +103,7 @@ websocket.on('open', function() {
         });
 
         stream.on('response', function (res) {
-            console.log('got response', res);
+            console.log('got response', res.getResponse());
         });
 
         stream.on('application-error', function (err) {
