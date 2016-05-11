@@ -3,10 +3,10 @@
   "version": "1.1.1",
   "description": "reactive socket js core",
   "bin" : {
-      "rb": "./bin/rsBench.js",
-      "rs": "./bin/rs.js",
-      "rs-tcp-server": "./bin/tcpServer.js",
-      "rs-ws-server": "./bin/wsServer.js"
+      "rb": "bin/rsBench.js",
+      "rs": "bin/rs.js",
+      "rs-tcp-server": "bin/tcpServer.js",
+      "rs-ws-server": "bin/wsServer.js"
   },
   "main": "lib/index.js",
   "scripts": {
