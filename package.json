@@ -2,11 +2,11 @@
   "name": "reactivesocket",
   "version": "1.1.1",
   "description": "reactive socket js core",
-  "bin" : {
-      "rb": "bin/rsBench.js",
-      "rs": "bin/rs.js",
-      "rs-tcp-server": "bin/tcpServer.js",
-      "rs-ws-server": "bin/wsServer.js"
+  "bin": {
+    "rb": "bin/rsBench.js",
+    "rs": "bin/rs.js",
+    "rs-tcp-server": "bin/tcpServer.js",
+    "rs-ws-server": "bin/wsServer.js"
   },
   "main": "lib/index.js",
   "scripts": {
@@ -36,6 +36,7 @@
   "homepage": "https://github.com/ReactiveSocket/reactivesocket-js#readme",
   "dependencies": {
     "assert-plus": "^1.0.0",
+    "async": "^2.0.0-rc.4",
     "bunyan": "^1.5.1",
     "dashdash": "^1.13.1",
     "lodash": "^4.6.1",
@@ -43,7 +44,6 @@
     "yws-stream": "^1.0.0"
   },
   "devDependencies": {
-    "async": "^2.0.0-rc.4",
     "chai": "^3.4.0",
     "coveralls": "^2.11.6",
     "eslint": "^1.6.0",
